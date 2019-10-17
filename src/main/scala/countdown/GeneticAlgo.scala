@@ -10,55 +10,47 @@ package countdown
  */
 object GeneticAlgo {
 
-  /**
-   * Given an index into a sorted array of size, return a different index
-   *
-   * @param index
-   * @param size
-   * @return
-   */
-  def randomNeighborIndex(index: Int, size: Int, nextInt : Int => Int): Int = {
-    val offset = nextInt(size)
-    val newIndex = index + offset
-    if (newIndex < 0) {
-
-    }
+  def apply[A: AlgoSettings](population: IndexedSeq[Geneology[A]]): Option[Geneology[A]] = {
+    run(population, 0)
   }
-
-  sealed trait Geneology[A] {
-    def value: A
-  }
-
-  case class Origin[A](override val value: A) extends Geneology[A]
-
-  case class Offspring[A](override val value: A, mom: Geneology[A], dad: Geneology[A]) extends Geneology[A]
-
 
   // 1) start w/ an initial population
-  def run[A: AlgoSettings](population: IndexedSeq[Geneology[A]], generation: Int): Option[Geneology[A]] = {
+  private def run[A: AlgoSettings](population: IndexedSeq[Geneology[A]], generation: Int): Option[Geneology[A]] = {
     val settings = AlgoSettings[A]
-    //import settings._
     // 2) sort on fitness
-    population.sorted match {
+    population match {
       // 3) if there's a solution, good times...
-      case head +: _ if settings.success(head) =>
+      case head +: _ if settings.success(head.value) =>
         Option(head)
+      case _ if generation > settings.maxGenerations => None
       case sorted =>
         // 4) reproduce
         val max = sorted.size
-        val newGeneration = sorted.zipWithIndex.map {
+        val newGeneration: IndexedSeq[Geneology[A]] = sorted.zipWithIndex.flatMap {
           case (mom, i) =>
-            val partnerIndex = randomNeighborIndex(i, max)
-            val dad: Geneology[A] = sorted(partnerIndex)
-            val child = settings.semigroup.combine(mom.value, dad.value)
+            val partnerIndices = settings.chooseMateIndices(i, max)
+            require(!partnerIndices.contains(i))
 
-            // 5) potentially mutate some records
-            val mutated = settings.mutate(child, generation, i)
-            Offspring(mutated, mom, dad)
+            val children = partnerIndices.map { partnerIndex =>
+              val dad: Geneology[A] = sorted(partnerIndex)
+              val child = settings.semigroup.combine(mom.value, dad.value)
+
+              // 5) potentially mutate some records
+              settings.mutate(child, generation, i) match {
+                case Some(mutated) =>
+                  val original = Offspring(child, generation, i, mom, dad)
+                  Mutation(mutated, original)
+                case None =>
+                  Offspring(child, generation, i, mom, dad)
+              }
+            }
+            children
         }
 
         // survival of the fittest!
-        newGeneration.take(settings.maxPopulationSize)
+        import settings.implicits._
+        val newPopulation = newGeneration.sortBy(_.value).take(settings.maxPopulationSize)
+        run(newPopulation, generation + 1)
     }
   }
 
