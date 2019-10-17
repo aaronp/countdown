@@ -10,8 +10,8 @@ package countdown
  */
 object GeneticAlgo {
 
-  def apply[A: AlgoSettings](population: IndexedSeq[Geneology[A]]): Option[Geneology[A]] = {
-    run(population, 0)
+  def apply[A: AlgoSettings](population: Seq[A]): Option[Geneology[A]] = {
+    run(population.map(Origin.apply).toIndexedSeq, 0)
   }
 
   // 1) start w/ an initial population
@@ -53,5 +53,4 @@ object GeneticAlgo {
         run(newPopulation, generation + 1)
     }
   }
-
 }
