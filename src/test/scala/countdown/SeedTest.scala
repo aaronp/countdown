@@ -1,24 +1,17 @@
 package countdown
 
-import cats.data.State
-import org.scalatest.FunSuite
-
-import scala.util.Random
-
 class SeedTest extends BaseSpec {
 
-  "Seed.tuples" should {
-    "return different random values" in {
-
-      Seed()
-
-      val badState: State[Random, Int] = State.apply[Random, Int] { r =>
-        r -> r.nextInt()
+  "Seed.nextInt" should {
+    for {
+      max <- (0 to 100)
+    } {
+      s"return ints between zero and $max, inclusive" in {
+        val randoms = (0 to max * 2).map { i =>
+          Seed.nextInt(max).run(Seed(i)).value._2
+        }
+        randoms.distinct.sorted should contain theSameElementsInOrderAs (0 to max)
       }
-      val (r, x) = badState.run(new Random).value
-      val (r2, x2) = badState.run(new Random).value
-      println(x)
-      println(x2)
     }
   }
 }
