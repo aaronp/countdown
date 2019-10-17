@@ -18,7 +18,18 @@ final case object Divide extends Op("/")
 
 object Element {
 
+
   type Equation = Seq[Element]
+
+  def parse(value: String): Equation = {
+    value.split(" ").map {
+      case "+" => Add
+      case "-" => Subtract
+      case "*" => Multiply
+      case "/" => Divide
+      case i => Num(i.toInt)
+    }
+  }
 
   def populate(values: Set[Int], minEqSize: Int, maxEqSize: Int, popSize: Int, seed: Seed) = {
     (0 to popSize).foldLeft((seed -> Seq[Equation]())) {
@@ -58,29 +69,22 @@ object Element {
     }
   }
 
-//  def populate(inputs: Set[Int], nextInt: Int => Int): Seq[Int] = {
-//    def choose(values: IndexedSeq[Int], chosen: Seq[Int]): Seq[Int] = {
-//      values.size match {
-//        case 0 => chosen
-//        case 1 => values.head +: chosen
-//        case _ =>
-//          val index = nextInt(values.size - 1)
-//          val x = values(index)
-//          val remaining = values.filterNot(_ == x)
-//          choose(remaining, x +: chosen)
-//      }
-//    }
-//
-//    choose(inputs.toIndexedSeq, Nil)
-//  }
+  final def eval(eq: Seq[Element]): Option[Int] = evalDouble(eq).map(_.toInt)
 
-  def eval(eq: Seq[Element]): Double = {
+  private final def evalDouble(eq: Seq[Element]): Option[Double] = {
     eq match {
-      case Seq(Num(x)) => x
-      case Num(x) +: Add +: theRest => x + eval(theRest)
-      case Num(x) +: Subtract +: theRest => x - eval(theRest)
-      case Num(x) +: Multiply +: theRest => x * eval(theRest)
-      case Num(x) +: Divide +: theRest => x / eval(theRest)
+      case Seq(Num(x)) => Option(x)
+      case Num(x) +: Add +: theRest => evalDouble(theRest).map(x + _)
+      case Num(x) +: Subtract +: theRest => evalDouble(theRest).map(x - _)
+      case Num(x) +: Multiply +: Num(y) +: theRest => evalDouble(Num(x * y) +: theRest)
+      case Num(x) +: Divide +: Num(y) +: theRest =>
+        if (x % y != 0) {
+          None
+        } else {
+          evalDouble(Num(x / y) +: theRest)
+        }
     }
   }
+
+  private def gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
 }
