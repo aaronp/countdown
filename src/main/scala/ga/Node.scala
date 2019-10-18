@@ -16,9 +16,9 @@ object Node {
     }
   }
 
-  def writeSolution[A: Show](soln: Geneology[A]) = {
+  def writeSolution[A: Show](soln: Geneology[A], maxNodes: Int) = {
     val solutionNode = {
-      val n = Node(soln)
+      val n = Node(soln, maxNodes)
       n.copy(label = "ANSWER:" + n.label)
     }
     val javascript = Node.javascriptCode(solutionNode)
@@ -32,14 +32,14 @@ object Node {
 
   import cats.syntax.show._
 
-  def apply[A: Show](geneology: Geneology[A]): Node = {
-    forGeneology(geneology, new AtomicInteger(0))
+  def apply[A: Show](geneology: Geneology[A], maxNodes: Int): Node = {
+    forGeneology(geneology, new AtomicInteger(maxNodes), "")
   }
 
-  def writeTo[A: Show](geneology: Geneology[A]) = {
+  def writeTo[A: Show](geneology: Geneology[A], maxNodes: Int) = {
     getClass.getClassLoader.getResource("springy.js")
     getClass.getClassLoader.getResource("springyui.js")
-    val javascript = javascriptCode(Node(geneology))
+    val javascript = javascriptCode(Node(geneology, maxNodes))
     Files.write(Paths.get("solution.html"), javascript.getBytes)
   }
 
@@ -94,16 +94,27 @@ object Node {
     (edges ++ parentEdges).mkString("\n")
   }
 
-  private def forGeneology[A: Show](geneology: Geneology[A], id: AtomicInteger): Node = {
+  private def forGeneology[A: Show](geneology: Geneology[A], idCounter: AtomicInteger, prefix:String): Node = {
+    val id = idCounter.decrementAndGet()
+    val nodeId = s"${prefix}_n$id".replaceAllLiterally("-", "xx")
     geneology match {
-      case Origin(value) => Node(s"node${id.incrementAndGet()}", s"Original value: ${value.show}", Set.empty)
+      case Origin(value) => Node(nodeId, s"${value.show}", Set.empty)
       case Mutation(value, from) =>
-        val fromNode = forGeneology(from, id)
-        Node(s"node${id.incrementAndGet()}", s"Mutation ${value.show}", Set(fromNode))
+        val fromNode = if (id <= 0) Set.empty[Node] else Set(forGeneology(from, idCounter, prefix))
+        Node(nodeId, s"Mutation ${value.show}", fromNode)
       case Offspring(value, gen, nr, mom, dad) =>
-        val momNode = forGeneology(mom, id)
-        val dadNode = forGeneology(dad, id)
-        Node(s"node${id.incrementAndGet()}", s"${value.show}", Set(momNode, dadNode))
+        val parents = if (id <= 0) Set.empty[Node] else {
+          val half = idCounter.get() / 2
+
+          val momCounter = new AtomicInteger(half)
+          val momNode = forGeneology(mom, momCounter, s"m$nodeId")
+
+          val dadCounter = new AtomicInteger(half)
+          val dadNode = forGeneology(dad, dadCounter, s"d$nodeId")
+
+          Set(momNode, dadNode)
+        }
+        Node(nodeId, s"@$gen:$nr ${value.show}", parents)
     }
   }
 }
