@@ -83,21 +83,30 @@ object GeneticAlgo {
     (newSeed, nextGen)
   }
 
-  
-  def combineAndMutate[A: AlgoSettings](random: Seed, mom: Geneology[A], dad: Geneology[A], generation: Int, i: Int) = {
-    val settings = AlgoSettings[A]
-    val (combineSeed, child: A) = settings.combine(random, mom.value, dad.value)
 
+  /**
+   * Do the mating/mutating of the two records
+   *
+   * @param random        our 'random' seed used to control randomness in our function for determining how to mate the two parents
+   * @param mom           the parent record 1
+   * @param dad           another parent record
+   * @param generation    some detail for the geneology
+   * @param childRecordId some detail for the geneology
+   * @tparam A
+   * @return
+   */
+  def combineAndMutate[A: AlgoSettings](random: Seed, mom: Geneology[A], dad: Geneology[A], generation: Int, childRecordId: Int): (Seed, Geneology[A]) = {
+    val settings = AlgoSettings[A]
     import settings.implicits.showInstance
 
+    val (combineSeed, child: A) = settings.combine(random, mom.value, dad.value)
+
+    val original = Offspring[A](child, generation, childRecordId, mom, dad)
     // potentially mutate some records
-    locally {
-      val original = Offspring[A](child, generation, i, mom, dad)
-      val (mutateSeed, changedOpt) = settings.mutate(combineSeed, child, generation, i)
-      val childGeneology = changedOpt.fold(original: Geneology[A]) { mutated =>
-        Mutation[A](mutated, original)
-      }
-      (mutateSeed, childGeneology)
+    val (mutateSeed, changedOpt) = settings.mutate(combineSeed, child, generation, childRecordId)
+    val childGeneology = changedOpt.fold(original: Geneology[A]) { mutated =>
+      Mutation[A](mutated, original)
     }
+    (mutateSeed, childGeneology)
   }
 }
