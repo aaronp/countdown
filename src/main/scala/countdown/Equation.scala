@@ -1,11 +1,8 @@
 package countdown
 
-import cats.Show
 import cats.data.State
 import cats.kernel.Semigroup
 import ga._
-
-import scala.util.Try
 
 final case class Equation(expression: Seq[Element]) {
 
@@ -40,9 +37,12 @@ final case class Equation(expression: Seq[Element]) {
   }
 
   override def toString = s"$expressionString == $eval"
+
   def expressionString = expression.mkString(" ")
 
-  lazy val eval: Option[Int] = Try(Equation.evalDouble(expression).map(_.toInt)).toOption.flatten
+  lazy val eval: Option[Int] = {
+    Equation.reduce(expression).map(Equation.evalReduced)
+  }
 
   def mutate() = {
     this
@@ -62,18 +62,26 @@ final case class Equation(expression: Seq[Element]) {
 
 object Equation {
 
-  private final def evalDouble(eq: Seq[Element]): Option[Double] = {
-    eq match {
-      case Seq(Num(x)) => Option(x)
-      case Num(x) +: Add +: theRest => evalDouble(theRest).map(x + _)
-      case Num(x) +: Subtract +: theRest => evalDouble(theRest).map(x - _)
-      case Num(x) +: Multiply +: Num(y) +: theRest => evalDouble(Num(x * y) +: theRest)
+  private[countdown] final def reduce(elements: Seq[Element]): Option[Seq[Element]] = {
+    import cats.syntax.option._
+    elements match {
       case Num(x) +: Divide +: Num(y) +: theRest =>
-        if (x % y != 0) {
-          None
+        if (x % y == 0) {
+          reduce(Num(x / y) +: theRest)
         } else {
-          evalDouble(Num(x / y) +: theRest)
+          Option.empty[Seq[Element]]
         }
+      case Num(x) +: Multiply +: Num(y) +: theRest => reduce(Num(x * y) +: theRest)
+      case Num(x) +: op +: theRest => reduce(theRest).map(Num(x) +: op +: _)
+      case seq => seq.some
+    }
+  }
+
+  private[countdown] final def evalReduced(eq: Seq[Element]): Int = {
+    eq match {
+      case Seq(Num(x)) => x
+      case Num(x) +: Add +: theRest => x + evalReduced(theRest)
+      case Num(x) +: Subtract +: Num(y) +: theRest => evalReduced(Num(x - y) +: theRest)
     }
   }
 

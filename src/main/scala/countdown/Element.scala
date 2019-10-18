@@ -1,4 +1,4 @@
-package ga
+package countdown
 
 /**
  * Represents either a number or an operation in the countdown space
