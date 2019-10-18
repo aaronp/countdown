@@ -78,7 +78,7 @@ object Equation {
     }
   }
 
-  def equationOfLen(size: Int, fromValues: Set[Int], seed: Seed): (Seed, Seq[Element]) = {
+  def equationOfLen(size: Int, fromValues: Set[Int], seed: Seed): (Seed, Equation) = {
     def next(valuePool: List[Int]) = for {
       index <- Seed.nextInt(valuePool.size - 1)
       value = valuePool(index)
@@ -94,6 +94,6 @@ object Equation {
         (newPool, newRnd, num +: op +: result)
     }
     // drop the last operation
-    rnd -> equation.init
+    rnd -> Equation(equation.init)
   }
 }

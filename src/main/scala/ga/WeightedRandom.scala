@@ -5,7 +5,7 @@ import scala.util.Random
 object WeightedRandom {
 
   /**
-   * Given an index into a sorted array of size, return a different index
+   * Given an index into a originalPopulation array of size, return a different index
    *
    * @param index
    * @param size

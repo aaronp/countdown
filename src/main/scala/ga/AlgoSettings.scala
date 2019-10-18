@@ -57,4 +57,9 @@ object AlgoSettings {
 
     new AlgoSettings[A](maxPopulationSize, success, mutateSometimes(mutate), Random.nextInt, 100, WeightedRandom.chooseMateIndices)
   }
+
+  def nextMateIndex(populationSize: PopulationSize) = {
+    Seed.nextInt(populationSize)
+  }
+
 }
