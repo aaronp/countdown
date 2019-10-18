@@ -50,34 +50,54 @@ object GeneticAlgo {
     import settings.implicits._
     val max = originalPopulation.size
 
+    //
+    // for each record, mate it with one or more other records (passing on our random seed to determine the output)
+    //
     val (newSeed, newGeneration) = originalPopulation.zipWithIndex.foldLeft(initialSeed -> IndexedSeq.empty[Geneology[A]]) {
       case ((nextSeed, results), (mom, i)) =>
-        // determine who to mate with for this entry
-        val (newSeed, partnerIndices) = AlgoSettings.nextMateIndices(i, max).run(nextSeed).value
-//        val partnerIndices = settings.chooseMateIndices(i, max)
+
+        //
+        // find out who to randomly mate with
+        //
+        val (mateSeed, partnerIndices) = AlgoSettings.nextMateIndices(i, max).run(nextSeed).value
         require(!partnerIndices.contains(i))
 
-        val children: Seq[Geneology[A]] = partnerIndices.map { partnerIndex =>
-          val dad: Geneology[A] = originalPopulation(partnerIndex)
-          val child = settings.semigroup.combine(mom.value, dad.value)
-
-          // potentially mutate some records
-          settings.mutate(child, generation, i) match {
-            case Some(mutated) =>
-              val original = Offspring(child, generation, i, mom, dad)
-              Mutation(mutated, original)
-            case None =>
-              Offspring(child, generation, i, mom, dad)
-          }
+        //
+        // actually combine the 'mom' and 'dad' records
+        //
+        val (updatedSeed, offspring) = partnerIndices.foldLeft(mateSeed -> Seq.empty[Geneology[A]]) {
+          case ((seed, children), partnerIndex) =>
+            val dad: Geneology[A] = originalPopulation(partnerIndex)
+            val (newSeed, child) = combineAndMutate(seed, mom, dad, generation, i)
+            (newSeed, child +: children)
         }
-        val newChildren = children ++: results
 
-        (newSeed, newChildren)
-
+        val newChildren = offspring ++: results
+        (updatedSeed, newChildren)
     }
 
-    // survival of the fittest!
+    //
+    // survival of the fittest! Sort and cull ...
+    //
     val nextGen = newGeneration.sortBy(_.value).take(settings.maxPopulationSize)
     (newSeed, nextGen)
+  }
+
+  
+  def combineAndMutate[A: AlgoSettings](random: Seed, mom: Geneology[A], dad: Geneology[A], generation: Int, i: Int) = {
+    val settings = AlgoSettings[A]
+    val (combineSeed, child: A) = settings.combine(random, mom.value, dad.value)
+
+    import settings.implicits.showInstance
+
+    // potentially mutate some records
+    locally {
+      val original = Offspring[A](child, generation, i, mom, dad)
+      val (mutateSeed, changedOpt) = settings.mutate(combineSeed, child, generation, i)
+      val childGeneology = changedOpt.fold(original: Geneology[A]) { mutated =>
+        Mutation[A](mutated, original)
+      }
+      (mutateSeed, childGeneology)
+    }
   }
 }

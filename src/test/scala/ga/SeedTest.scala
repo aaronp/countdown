@@ -2,6 +2,32 @@ package ga
 
 class SeedTest extends BaseSpec {
 
+  "Seed.weightedBoolean" should {
+
+    "should always return true for 1.0" in {
+      Iterator.from(0).take(1000).foldLeft(Seed(7)) {
+        case (s, _) =>
+          val (next, true) = Seed.weightedBoolean(1.0).run(s).value
+          next
+      }
+    }
+    "should always return false for 0.0" in {
+      Iterator.from(0).take(1000).foldLeft(Seed(7)) {
+        case (s, _) =>
+          val (next, false) = Seed.weightedBoolean(0.0).run(s).value
+          next
+      }
+    }
+    "should return true roughly 25% of the time for .25" in {
+      val (_, booleans) = Iterator.from(0).take(10000).foldLeft(Seed(7) -> Seq.empty[Boolean]) {
+        case ((s, found), _) =>
+          val (next, b) = Seed.weightedBoolean(0.25).run(s).value
+          next -> (b +: found)
+      }
+      val actual = booleans.count(identity).toDouble / booleans.size
+      actual shouldBe 0.25 +- 0.001
+    }
+  }
   "Seed.nextDouble" should {
 
     Seq(
