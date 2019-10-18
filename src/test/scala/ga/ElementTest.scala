@@ -1,4 +1,4 @@
-package countdown
+package ga
 
 class ElementTest extends BaseSpec {
 

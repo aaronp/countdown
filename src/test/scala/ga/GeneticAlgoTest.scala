@@ -1,6 +1,6 @@
-package countdown
+package ga
 
-class GeneticAlgoTest extends countdown.BaseSpec {
+class GeneticAlgoTest extends ga.BaseSpec {
 
   "GeneticAlgo.apply" should {
     "return a solution" in {

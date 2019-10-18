@@ -1,4 +1,4 @@
-package countdown
+package ga
 
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 

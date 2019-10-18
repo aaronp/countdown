@@ -1,4 +1,6 @@
-package countdown
+package ga
+
+import cats.Show
 
 /**
  * 1) start with an initial population, represented as Seq[A]
@@ -11,12 +13,18 @@ package countdown
 object GeneticAlgo {
 
   def apply[A: AlgoSettings](population: Seq[A]): Option[Geneology[A]] = {
-    run(population.map(Origin.apply).toIndexedSeq, 0)
+    implicit val s: Show[A] = AlgoSettings[A].show
+    run(population.map(x => Origin(x)).toIndexedSeq, 0)
   }
 
   // 1) start w/ an initial population
   private def run[A: AlgoSettings](population: IndexedSeq[Geneology[A]], generation: Int): Option[Geneology[A]] = {
+
     val settings = AlgoSettings[A]
+    import settings.implicits._
+
+    println(population.mkString(s"Generation $generation:\n", "\n", "\n\n"))
+
     // 2) sort on fitness
     population match {
       // 3) if there's a solution, good times...
@@ -48,7 +56,6 @@ object GeneticAlgo {
         }
 
         // survival of the fittest!
-        import settings.implicits._
         val newPopulation = newGeneration.sortBy(_.value).take(settings.maxPopulationSize)
         run(newPopulation, generation + 1)
     }

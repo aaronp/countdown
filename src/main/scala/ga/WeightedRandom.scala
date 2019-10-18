@@ -1,4 +1,4 @@
-package countdown
+package ga
 
 import scala.util.Random
 
