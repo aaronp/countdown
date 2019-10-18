@@ -1,11 +1,40 @@
 package countdown
 
 import cats.Show
+import cats.data.State
 import cats.kernel.Semigroup
-import ga.Element.opForInt
 import ga._
 
 final case class Equation(expression: Seq[Element]) {
+
+  /**
+   * Alter this equation, changing the value at 'index'
+   *
+   * @param index
+   * @param inputNumbers
+   * @return
+   */
+  def mutateAt(index: Int, inputNumbers: Set[Int]): State[Seed, Equation] = {
+    expression(index) match {
+      case op: Op =>
+        Seed.nextInt(2).map { n =>
+          val opIndex = (n + op.index) % Op.values.size
+          val differentOp = Op.forInt(opIndex).getOrElse(sys.error(s"Bug: bad opIndex $opIndex for rnd $n and $op (${op.index})"))
+          swap(index, differentOp)
+        }
+      case Num(x) =>
+        Seed.nextInt(inputNumbers.size - 1).map { index =>
+          val newNum = inputNumbers.toSeq(index)
+          swap(index, Num(newNum))
+        }
+    }
+  }
+
+  private def swap(index: Int, elm: Element): Equation = {
+    val changed = expression.updated(index, elm)
+    copy(expression = changed)
+  }
+
   override def toString = {
     expression.mkString("", " ", " == " + eval)
   }
@@ -82,8 +111,8 @@ object Equation {
     def next(valuePool: List[Int]) = for {
       index <- Seed.nextInt(valuePool.size - 1)
       value = valuePool(index)
-      opIndex <- Seed.nextInt(4)
-      op = opForInt(opIndex)
+      opIndex <- Seed.nextInt(3)
+      op = Op.forInt(opIndex).getOrElse(sys.error(s"Bug: $opIndex"))
     } yield {
       (Num(value), op, valuePool diff List(value))
     }

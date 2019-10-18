@@ -1,24 +1,23 @@
 package ga
 
+import cats.Show
 import cats.data.State
-import cats.{Semigroup, Show}
 import ga.AlgoSettings.{Generation, Offset}
 
-import scala.util.Random
-
 /**
- *
- * @param maxPopulationSize
- * @param success
+ * @param maxPopulationSize the max population size to keep
+ * @param maxGenerations    the maximum number of generations to run
+ * @param success           a predicate to determine if 'A' satisfies the success criteria
+ * @param mutate            a function which can optionally mutate a record
+ * @param combine           a function which can combine two records given a random seed
  * @tparam A
  */
-final case class AlgoSettings[A: Semigroup : Ordering : Show](maxPopulationSize: Int,
-                                                              success: A => Boolean,
-                                                              mutate: (Seed, A, Generation, Offset) => (Seed, Option[A]),
-                                                              nextInt: Int => Int,
-                                                              maxGenerations: Int,
-                                                              combine : (Seed, A, A) => (Seed, A)
-                                                             ) {
+final case class AlgoSettings[A: Ordering : Show](maxPopulationSize: Int,
+                                                  maxGenerations: Int,
+                                                  success: A => Boolean,
+                                                  mutate: (Seed, A, Generation, Offset) => (Seed, Option[A]),
+                                                  combine: (Seed, A, A) => (Seed, A)
+                                                 ) {
 
   def ordering: Ordering[A] = Ordering[A]
 
@@ -44,20 +43,61 @@ object AlgoSettings {
   type PartnerIndex = Int
   type Generation = Int
   type Offset = Int
+  type Combine[A] = (Seed, A, A) => (Seed, A)
 
   def apply[A](implicit instance: AlgoSettings[A]): AlgoSettings[A] = instance
 
-  def mutateSometimes[A](f: A => A) = (value: A, g: Generation, o: Offset) => {
-    if (Random.nextInt(1000) >= 998) {
-      Option(f(value))
-    } else {
-      None
-    }
+  def apply[A: Ordering : Show](maxPopulationSize: Int, maxGenerations: Int)(combine: Combine[A]): dsl.Builder1[A] = {
+    dsl.Builder1(maxPopulationSize, maxGenerations, combine)
   }
 
-  def apply[A: Semigroup : Ordering : Show](maxPopulationSize: Int, mutate: A => A)(success: A => Boolean): AlgoSettings[A] = {
+  /**
+   * Some builder syntax. You don't have to use this.
+   */
+  object dsl {
 
-    new AlgoSettings[A](maxPopulationSize, success, mutateSometimes(mutate), Random.nextInt, 100)
+    case class Builder1[A: Ordering : Show] private(maxPopulationSize: Int,
+                                                    maxGenerations: Int,
+                                                    combine: Combine[A]) {
+      /**
+       * @param f the success predicate
+       * @return a builder which can be used to fill in the mutation criteria
+       */
+      def withSuccessCriteria(f: A => Boolean) = Builder2(this, f)
+    }
+
+    final case class Builder2[A: Ordering : Show] private(parent: Builder1[A], success: A => Boolean) {
+      /**
+       * A simplified, partially applied mutation function
+       *
+       * @param mutateFrequency
+       * @param f
+       * @return
+       */
+      def mutateEvery(mutateFrequency: Double)(f: (Seed, A) => (Seed, A)): AlgoSettings[A] = {
+        mutateUsing {
+          case (rnd, a, _, _) =>
+            val randomTransform = Seed.weightedBoolean(mutateFrequency).transform {
+              case (seed, true) =>
+                val (newSeed, mutated) = f(seed, a)
+                (newSeed, Option(mutated))
+              case (seed, false) => (seed, None)
+            }
+            randomTransform.run(rnd).value
+        }
+      }
+
+      def mutateUsing(f: (Seed, A, Generation, Offset) => (Seed, Option[A])): AlgoSettings[A] = {
+        new AlgoSettings[A](
+          maxPopulationSize = parent.maxPopulationSize,
+          maxGenerations = parent.maxGenerations,
+          success = success,
+          mutate = f,
+          combine = parent.combine
+        )
+      }
+    }
+
   }
 
   /**

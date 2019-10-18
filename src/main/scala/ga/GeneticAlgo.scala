@@ -12,9 +12,9 @@ import cats.Show
  */
 object GeneticAlgo {
 
-  def apply[A: AlgoSettings](population: Seq[A]): Option[Geneology[A]] = {
+  def solve[A: AlgoSettings](population: Seq[A], seed: Seed = Seed()): Option[Geneology[A]] = {
     implicit val s: Show[A] = AlgoSettings[A].show
-    run(population.map(x => Origin(x)).toIndexedSeq, 0, Seed())
+    run(population.map(x => Origin(x)).toIndexedSeq, 0, seed)
   }
 
   // 1) start w/ an initial population
