@@ -15,8 +15,7 @@ final case class AlgoSettings[A: Semigroup : Ordering : Show](maxPopulationSize:
                                                               success: A => Boolean,
                                                               mutate: (A, Generation, Offset) => Option[A],
                                                               nextInt: Int => Int,
-                                                              maxGenerations: Int,
-                                                              chooseMateIndices: (PartnerIndex, PopulationSize) => Seq[PartnerIndex]
+                                                              maxGenerations: Int
                                                       ) {
   def semigroup: Semigroup[A] = Semigroup[A]
 
@@ -55,11 +54,26 @@ object AlgoSettings {
 
   def apply[A: Semigroup : Ordering : Show](maxPopulationSize: Int, mutate: A => A)(success: A => Boolean): AlgoSettings[A] = {
 
-    new AlgoSettings[A](maxPopulationSize, success, mutateSometimes(mutate), Random.nextInt, 100, WeightedRandom.chooseMateIndices)
+    new AlgoSettings[A](maxPopulationSize, success, mutateSometimes(mutate), Random.nextInt, 100)
   }
 
-  def nextMateIndex(populationSize: PopulationSize) = {
-    Seed.nextInt(populationSize)
+  def nextMateIndices(forIndex : Int, populationSize: PopulationSize) = {
+    Seed.nextDouble.map {
+
+      // choose a neighbor with a 60% chance
+      case n if n < 0.6 => if (forIndex >= populationSize - 1) {
+        Seq(forIndex - 1)
+      } else {
+        Seq(forIndex + 1)
+      }
+      case n if n < 0.8 => if (forIndex >= populationSize - 2) {
+        Seq(forIndex - 2)
+      } else {
+        Seq(forIndex + 2)
+      }
+      case _ if forIndex >= populationSize - 1 => Seq(forIndex - 1)
+      case _ => Seq(forIndex + 1)
+    }
   }
 
 }

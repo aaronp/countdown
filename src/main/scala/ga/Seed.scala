@@ -23,7 +23,7 @@ object Seed {
     (seed.next, seed.long))
 
   val nextDouble: State[Seed, Double] = nextLong.map { i =>
-    i.toDouble / Long.MaxValue
+    (i / Long.MaxValue.toDouble).abs
   }
   val nextBoolean: State[Seed, Boolean] = nextLong.map(_ > 0)
 

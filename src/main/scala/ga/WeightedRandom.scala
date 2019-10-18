@@ -21,28 +21,6 @@ object WeightedRandom {
   }
 
   /**
-   * Given the index to some gene, return the indices which it should mate with
-   * @param i
-   * @param max
-   * @return
-   */
-  def chooseMateIndices(i: Int, max: Int): Seq[Int] = {
-    Random.nextDouble() match {
-      case n if n < 0.6 => if (i >= max - 1) {
-        Seq(i - 1)
-      } else {
-        Seq(i + 1)
-      }
-      case n if n < 0.8 => if (i >= max - 2) {
-        Seq(i - 2)
-      } else {
-        Seq(i + 2)
-      }
-      case _ if i >= max - 1 => Seq(i - 1)
-      case _ => Seq(i + 1)
-    }
-  }
-  /**
    * group some value with a percentage of likelihood (e.g. ("foo" -> 0.7, "bar" -> 0.2, "unlikely" -> 0.1)
    *
    * The percentages must add up to 1.0 or an error is thrown.

@@ -1,4 +1,6 @@
-package ga
+package countdown
+
+import ga.BaseSpec
 
 class SolverTest extends BaseSpec {
 

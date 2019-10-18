@@ -18,7 +18,7 @@ object GeneticAlgo {
   }
 
   // 1) start w/ an initial population
-  private def run[A: AlgoSettings](population: IndexedSeq[Geneology[A]], generation: Int, rand : Seed): Option[Geneology[A]] = {
+  private def run[A: AlgoSettings](population: IndexedSeq[Geneology[A]], generation: Int, rand: Seed): Option[Geneology[A]] = {
 
     val settings = AlgoSettings[A]
 
@@ -32,8 +32,8 @@ object GeneticAlgo {
       case _ if generation > settings.maxGenerations => None
       case sorted =>
         // 4) reproduce
-        val newPopulation = createNextGeneration(sorted, rand, generation)
-        run(newPopulation, generation + 1)
+        val (nextSeed, newPopulation) = createNextGeneration(sorted, rand, generation)
+        run(newPopulation, generation + 1, nextSeed)
     }
   }
 
@@ -45,15 +45,16 @@ object GeneticAlgo {
    * @tparam A
    * @return
    */
-  def createNextGeneration[A: AlgoSettings](originalPopulation: IndexedSeq[Geneology[A]], initialSeed : Seed, generation: Int): (Seed, IndexedSeq[Geneology[A]]) = {
+  def createNextGeneration[A: AlgoSettings](originalPopulation: IndexedSeq[Geneology[A]], initialSeed: Seed, generation: Int): (Seed, IndexedSeq[Geneology[A]]) = {
     val settings = AlgoSettings[A]
     import settings.implicits._
     val max = originalPopulation.size
-    val newGeneration: IndexedSeq[Geneology[A]] = originalPopulation.zipWithIndex.flatMap {
-      case (mom, i) =>
+
+    val (newSeed, newGeneration) = originalPopulation.zipWithIndex.foldLeft(initialSeed -> IndexedSeq.empty[Geneology[A]]) {
+      case ((nextSeed, results), (mom, i)) =>
         // determine who to mate with for this entry
-        val matindices = AlgoSettings.nextMateIndex(max).run(initialSeed).value
-        val partnerIndices = settings.chooseMateIndices(i, max)
+        val (newSeed, partnerIndices) = AlgoSettings.nextMateIndices(i, max).run(nextSeed).value
+//        val partnerIndices = settings.chooseMateIndices(i, max)
         require(!partnerIndices.contains(i))
 
         val children: Seq[Geneology[A]] = partnerIndices.map { partnerIndex =>
@@ -69,11 +70,14 @@ object GeneticAlgo {
               Offspring(child, generation, i, mom, dad)
           }
         }
-        children
+        val newChildren = children ++: results
+
+        (newSeed, newChildren)
+
     }
 
     // survival of the fittest!
     val nextGen = newGeneration.sortBy(_.value).take(settings.maxPopulationSize)
-    ???
+    (newSeed, nextGen)
   }
 }
