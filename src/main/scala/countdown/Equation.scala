@@ -5,6 +5,8 @@ import cats.data.State
 import cats.kernel.Semigroup
 import ga._
 
+import scala.util.Try
+
 final case class Equation(expression: Seq[Element]) {
 
   /**
@@ -15,7 +17,8 @@ final case class Equation(expression: Seq[Element]) {
    * @return
    */
   def mutateAt(index: Int, inputNumbers: Set[Int]): State[Seed, Equation] = {
-    expression(index) match {
+    val elm = expression(index)
+    elm match {
       case op: Op =>
         Seed.nextInt(2).map { n =>
           val opIndex = (n + op.index) % Op.values.size
@@ -23,8 +26,9 @@ final case class Equation(expression: Seq[Element]) {
           swap(index, differentOp)
         }
       case Num(x) =>
-        Seed.nextInt(inputNumbers.size - 1).map { index =>
-          val newNum = inputNumbers.toSeq(index)
+        val remainingNumbers = inputNumbers - x
+        Seed.nextInt(remainingNumbers.size - 1).map { index =>
+          val newNum = remainingNumbers.toSeq(index)
           swap(index, Num(newNum))
         }
     }
@@ -39,7 +43,7 @@ final case class Equation(expression: Seq[Element]) {
     expression.mkString("", " ", " == " + eval)
   }
 
-  lazy val eval: Option[Int] = Equation.evalDouble(expression).map(_.toInt)
+  lazy val eval: Option[Int] = Try(Equation.evalDouble(expression).map(_.toInt)).toOption.flatten
 
   def mutate() = {
     this

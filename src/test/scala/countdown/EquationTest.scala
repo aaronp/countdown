@@ -8,8 +8,8 @@ class EquationTest extends BaseSpec {
     "alter the equation" in {
       val eq = Equation.parse("10 / 12 + 32 - 400 + 600 + 7 / 2")
 
-      println(eq.mutateAt(0, Set(1000)).runA(Seed(1234)).value)
-      println(eq.mutateAt(0, Set(1000, 2000)).runA(Seed(1234)).value)
+//      println(eq.mutateAt(0, Set(1000)).runA(Seed(1234)).value)
+//      println(eq.mutateAt(0, Set(1000, 2000)).runA(Seed(1234)).value)
       println(eq.mutateAt(0, Set(1000, 3000, 2000)).runA(Seed(1234)).value)
 
       println(eq.mutateAt(1, Set(1000, 3000, 2000)).runA(Seed(1234)).value)
