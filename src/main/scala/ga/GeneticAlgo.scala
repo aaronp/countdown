@@ -12,17 +12,19 @@ import cats.Show
  */
 object GeneticAlgo {
 
-  def solve[A: AlgoSettings](population: Seq[A], seed: Seed = Seed()): Option[Geneology[A]] = {
+  def solve[A: AlgoSettings](population: Seq[A], seed: Seed = Seed(), debug: Boolean = true): Option[Geneology[A]] = {
     implicit val s: Show[A] = AlgoSettings[A].show
-    run(population.map(x => Origin(x)).toIndexedSeq, 0, seed)
+    run(population.map(x => Origin(x)).toIndexedSeq, 0, seed, debug)
   }
 
   // 1) start w/ an initial population
-  private def run[A: AlgoSettings](population: IndexedSeq[Geneology[A]], generation: Int, rand: Seed): Option[Geneology[A]] = {
+  private def run[A: AlgoSettings](population: IndexedSeq[Geneology[A]], generation: Int, rand: Seed, debug: Boolean): Option[Geneology[A]] = {
 
     val settings = AlgoSettings[A]
 
-//    println(population.mkString(s"Generation $generation:\n", "\n", "\n\n"))
+    if (debug) {
+      println(population.mkString(s"Generation $generation:\n", "\n", "\n\n"))
+    }
 
     // 2) sort on fitness
     population match {
@@ -33,7 +35,7 @@ object GeneticAlgo {
       case sorted =>
         // 4) reproduce
         val (nextSeed, newPopulation) = createNextGeneration(sorted, rand, generation)
-        run(newPopulation, generation + 1, nextSeed)
+        run(newPopulation, generation + 1, nextSeed, debug)
     }
   }
 

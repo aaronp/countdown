@@ -36,7 +36,7 @@ final case class Equation(expression: Seq[Element]) {
     copy(expression = changed)
   }
 
-  override def toString = s"$expressionString == $eval"
+  override def toString = s"$expressionString == ${eval.getOrElse("???")}"
 
   def expressionString = expression.mkString(" ")
 
