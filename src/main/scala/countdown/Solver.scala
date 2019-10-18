@@ -1,5 +1,6 @@
 package countdown
 
+import cats.Show
 import ga.{AlgoSettings, GeneticAlgo, Seed}
 
 object Solver {
@@ -9,6 +10,11 @@ object Solver {
 
     // we need to know the target to know how to order
     implicit val ordering = Equation.orderingForTarget(targetNumber)
+
+    // show the genrations
+    implicit val show = Show[Equation] { eq =>
+      s"${eq.toString.padTo(120, ' ')} --> score: ${eq.diff(targetNumber)}"
+    }
 
     // create some settings, describing how to combine and mutate our equations
     implicit val settings: AlgoSettings[Equation] = {

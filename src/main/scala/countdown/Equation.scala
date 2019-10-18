@@ -86,8 +86,6 @@ object Equation {
     eq.diff(targetNumber)
   }
 
-  implicit val show = Show.fromToString[Equation]
-
   def parse(value: String): Equation = {
     val expression = value.split(" ").map {
       case "+" => Add

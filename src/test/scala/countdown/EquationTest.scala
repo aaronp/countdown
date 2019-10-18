@@ -4,6 +4,12 @@ import ga.{BaseSpec, Seed}
 
 class EquationTest extends BaseSpec {
 
+  "Equation.eval" should {
+    "Evaluate equations" in {
+      Equation.parse("14 - 1 - 7 - 6 - 1 - 7 - 7").eval shouldBe Some(-15)
+      Equation.parse("14 - 1 - 7 - 6 - 1 - 7 - 7").diff(15) shouldBe 30
+    }
+  }
   "Equation.mutateAt" should {
     "alter the equation" in {
       val eq = Equation.parse("10 / 12 + 32 - 400 + 600 + 7 / 2")
