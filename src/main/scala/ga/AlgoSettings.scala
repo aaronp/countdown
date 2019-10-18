@@ -1,31 +1,32 @@
 package ga
 
-import cats.{Semigroup, Show}
-import ga.AlgoSettings.{Generation, Offset, PartnerIndex, PopulationSize}
-
-import scala.util.Random
+import cats.Show
+import cats.data.State
+import ga.AlgoSettings.{Generation, Offset}
 
 /**
- *
- * @param maxPopulationSize
- * @param success
+ * @param maxPopulationSize the max population size to keep
+ * @param maxGenerations    the maximum number of generations to run
+ * @param success           a predicate to determine if 'A' satisfies the success criteria
+ * @param mutate            a function which can optionally mutate a record
+ * @param combine           a function which can combine two records given a random seed
  * @tparam A
  */
-final case class AlgoSettings[A: Semigroup : Ordering : Show](maxPopulationSize: Int,
-                                                              success: A => Boolean,
-                                                              mutate: (A, Generation, Offset) => Option[A],
-                                                              nextInt: Int => Int,
-                                                              maxGenerations: Int,
-                                                              chooseMateIndices: (PartnerIndex, PopulationSize) => Seq[PartnerIndex]
-                                                      ) {
-  def semigroup: Semigroup[A] = Semigroup[A]
+final case class AlgoSettings[A: Ordering : Show](maxPopulationSize: Int,
+                                                  maxGenerations: Int,
+                                                  success: A => Boolean,
+                                                  mutate: (Seed, A, Generation, Offset) => (Seed, Option[A]),
+                                                  combine: (Seed, A, A) => (Seed, A)
+                                                 ) {
 
   def ordering: Ordering[A] = Ordering[A]
+
   def show: Show[A] = Show[A]
 
   object implicits {
-    implicit def semigroupInstance: Semigroup[A] = semigroup
+
     implicit def orderingInstance: Ordering[A] = ordering
+
     implicit def showInstance: Show[A] = show
   }
 
@@ -42,19 +43,118 @@ object AlgoSettings {
   type PartnerIndex = Int
   type Generation = Int
   type Offset = Int
+  type Combine[A] = (Seed, A, A) => (Seed, A)
 
   def apply[A](implicit instance: AlgoSettings[A]): AlgoSettings[A] = instance
 
-  def mutateSometimes[A](f: A => A) = (value: A, g: Generation, o: Offset) => {
-    if (Random.nextInt(1000) >= 998) {
-      Option(f(value))
-    } else {
-      None
+  def apply[A: Ordering : Show](maxPopulationSize: Int, maxGenerations: Int)(combine: Combine[A]): dsl.Builder1[A] = {
+    dsl.Builder1(maxPopulationSize, maxGenerations, combine)
+  }
+
+  /**
+   * Some builder syntax. You don't have to use this.
+   */
+  object dsl {
+
+    case class Builder1[A: Ordering : Show] private(maxPopulationSize: Int,
+                                                    maxGenerations: Int,
+                                                    combine: Combine[A]) {
+      /**
+       * @param f the success predicate
+       * @return a builder which can be used to fill in the mutation criteria
+       */
+      def withSuccessCriteria(f: A => Boolean) = Builder2(this, f)
+    }
+
+    final case class Builder2[A: Ordering : Show] private(parent: Builder1[A], success: A => Boolean) {
+      /**
+       * A simplified, partially applied mutation function
+       *
+       * @param mutateFrequency
+       * @param f
+       * @return
+       */
+      def mutateEvery(mutateFrequency: Double)(f: (Seed, A) => (Seed, A)): AlgoSettings[A] = {
+        mutateUsing {
+          case (rnd, a, _, _) =>
+            val randomTransform = Seed.weightedBoolean(mutateFrequency).transform {
+              case (seed, true) =>
+                val (newSeed, mutated) = f(seed, a)
+                (newSeed, Option(mutated))
+              case (seed, false) => (seed, None)
+            }
+            randomTransform.run(rnd).value
+        }
+      }
+
+      def mutateUsing(f: (Seed, A, Generation, Offset) => (Seed, Option[A])): AlgoSettings[A] = {
+        new AlgoSettings[A](
+          maxPopulationSize = parent.maxPopulationSize,
+          maxGenerations = parent.maxGenerations,
+          success = success,
+          mutate = f,
+          combine = parent.combine
+        )
+      }
+    }
+
+  }
+
+  /**
+   * We assume indices near the 'top' (e.g. closes to zero, furthest from populationSize) are 'fitter',
+   * so we give them more of an opportunity to produce multiple mates.
+   *
+   * If the index is in the top 30% of the population, we give it a 75% of having multiple mates
+   * If the index is in the top 60% of the population, we give it a 50% of having multiple mates
+   * Otherwise we give it a 25% of having multiple mates
+   *
+   * @param forIndex
+   * @param populationSize
+   */
+  def nextMateIndices(forIndex: Int, populationSize: PopulationSize): State[Seed, Seq[Int]] = {
+    val chanceForMultipleMates: Double = (forIndex.toDouble / populationSize) match {
+      case n if n <= 0.3 => 0.75
+      case n if n <= 0.6 => 0.5
+      case _ => 0.25
+    }
+
+    val randomNumberOfMatesToHave: State[Seed, Int] = for {
+      shouldHaveMultipleMates <- Seed.weightedBoolean(chanceForMultipleMates)
+      numMates <- Seed.nextInt(if (shouldHaveMultipleMates) 2 else 0).map(_ + 1)
+    } yield {
+      numMates
+    }
+
+    val createMate: State[Seed, Offset] = nextMateIndex(forIndex, populationSize)
+    randomNumberOfMatesToHave.transform {
+      case (seed, n) =>
+        (0 until n).foldLeft(seed -> Seq.empty[Int]) {
+          case ((nextSeed, results), _) =>
+            val (s, offset) = createMate.run(nextSeed).value
+            (s, offset +: results)
+        }
     }
   }
 
-  def apply[A: Semigroup : Ordering : Show](maxPopulationSize: Int, mutate: A => A)(success: A => Boolean): AlgoSettings[A] = {
+  /**
+   * @param forIndex       the index to be paired against
+   * @param populationSize the total size of the population
+   * @return another index into a population which should be paired (mated) with the 'forIndex'
+   */
+  def nextMateIndex(forIndex: Int, populationSize: PopulationSize): State[Seed, Int] = {
+    def inRange(x: Int) = x != forIndex && x >= 0 && x < populationSize
 
-    new AlgoSettings[A](maxPopulationSize, success, mutateSometimes(mutate), Random.nextInt, 100, WeightedRandom.chooseMateIndices)
+    val range: State[Seed, Seq[Int]] = Seed.nextDouble.map {
+      case n if n < 0.4 => Seq(-1, 1).map(forIndex + _) // 40% chance to use one away
+      case n if n < 0.5 => Seq(-2, 2).map(forIndex + _) // 10% chance to use two away
+      case n if n < 0.6 => Seq(-3, 3).map(forIndex + _) // 10% chance to use two away
+      case n => // 40% of just using some random mate
+        val chosen = (populationSize * n).toInt
+        Seq(chosen, chosen + 1, chosen - 1)
+    }
+
+    range.map { offsets =>
+      offsets.find(inRange).getOrElse(sys.error(s"Bug: Couldn't find a valid mate in $offsets for $forIndex and $populationSize"))
+    }
   }
 }

@@ -2,8 +2,8 @@ package ga
 
 class GeneticAlgoTest extends ga.BaseSpec {
 
-  "GeneticAlgo.apply" should {
-    "return a solution" in {
+  "GeneticAlgo.createNextGeneration" should {
+    "return a new generation of the most fit results" in {
 //      GeneticAlgo()
     }
   }

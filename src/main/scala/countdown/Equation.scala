@@ -1,16 +1,48 @@
 package countdown
 
-import cats.Show
+import cats.data.State
 import cats.kernel.Semigroup
-import ga.Element.opForInt
 import ga._
 
 final case class Equation(expression: Seq[Element]) {
-  override def toString = {
-    expression.mkString("", " ", " == " + eval)
+
+  /**
+   * Alter this equation, changing the value at 'index'
+   *
+   * @param index
+   * @param inputNumbers
+   * @return
+   */
+  def mutateAt(index: Int, inputNumbers: Set[Int]): State[Seed, Equation] = {
+    val elm = expression(index)
+    elm match {
+      case op: Op =>
+        Seed.nextInt(2).map { n =>
+          val opIndex = (n + op.index) % Op.values.size
+          val differentOp = Op.forInt(opIndex).getOrElse(sys.error(s"Bug: bad opIndex $opIndex for rnd $n and $op (${op.index})"))
+          swap(index, differentOp)
+        }
+      case Num(x) =>
+        val remainingNumbers = inputNumbers - x
+        Seed.nextInt(remainingNumbers.size - 1).map { numIdx =>
+          val newNum = remainingNumbers.toSeq(numIdx)
+          swap(index, Num(newNum))
+        }
+    }
   }
 
-  lazy val eval: Option[Int] = Equation.evalDouble(expression).map(_.toInt)
+  private def swap(index: Int, elm: Element): Equation = {
+    val changed = expression.updated(index, elm)
+    copy(expression = changed)
+  }
+
+  override def toString = s"$expressionString == $eval"
+
+  def expressionString = expression.mkString(" ")
+
+  lazy val eval: Option[Int] = {
+    Equation.reduce(expression).map(Equation.evalReduced)
+  }
 
   def mutate() = {
     this
@@ -19,9 +51,8 @@ final case class Equation(expression: Seq[Element]) {
   def size = expression.size
 
   def combineAt(other: Equation, index: Int): Equation = {
-    val maxSize = size.min(other.size)
-
-    copy(expression = other.expression.take(index) ++ other.expression.drop(index))
+    val safeIndex = (size - 1).min(other.size - 1).min(index).max(1)
+    copy(expression = expression.take(safeIndex) ++ other.expression.drop(safeIndex))
   }
 
   def diff(targetNumber: Int): Int = {
@@ -31,18 +62,26 @@ final case class Equation(expression: Seq[Element]) {
 
 object Equation {
 
-  private final def evalDouble(eq: Seq[Element]): Option[Double] = {
-    eq match {
-      case Seq(Num(x)) => Option(x)
-      case Num(x) +: Add +: theRest => evalDouble(theRest).map(x + _)
-      case Num(x) +: Subtract +: theRest => evalDouble(theRest).map(x - _)
-      case Num(x) +: Multiply +: Num(y) +: theRest => evalDouble(Num(x * y) +: theRest)
+  private[countdown] final def reduce(elements: Seq[Element]): Option[Seq[Element]] = {
+    import cats.syntax.option._
+    elements match {
       case Num(x) +: Divide +: Num(y) +: theRest =>
-        if (x % y != 0) {
-          None
+        if (x % y == 0) {
+          reduce(Num(x / y) +: theRest)
         } else {
-          evalDouble(Num(x / y) +: theRest)
+          Option.empty[Seq[Element]]
         }
+      case Num(x) +: Multiply +: Num(y) +: theRest => reduce(Num(x * y) +: theRest)
+      case Num(x) +: op +: theRest => reduce(theRest).map(Num(x) +: op +: _)
+      case seq => seq.some
+    }
+  }
+
+  private[countdown] final def evalReduced(eq: Seq[Element]): Int = {
+    eq match {
+      case Seq(Num(x)) => x
+      case Num(x) +: Add +: theRest => x + evalReduced(theRest)
+      case Num(x) +: Subtract +: Num(y) +: theRest => evalReduced(Num(x - y) +: theRest)
     }
   }
 
@@ -54,8 +93,6 @@ object Equation {
   def orderingForTarget(targetNumber: Int) = Ordering.by[Equation, Int] { eq =>
     eq.diff(targetNumber)
   }
-
-  implicit val show = Show.fromToString[Equation]
 
   def parse(value: String): Equation = {
     val expression = value.split(" ").map {
@@ -78,12 +115,12 @@ object Equation {
     }
   }
 
-  def equationOfLen(size: Int, fromValues: Set[Int], seed: Seed): (Seed, Seq[Element]) = {
+  def equationOfLen(size: Int, fromValues: Set[Int], seed: Seed): (Seed, Equation) = {
     def next(valuePool: List[Int]) = for {
       index <- Seed.nextInt(valuePool.size - 1)
       value = valuePool(index)
-      opIndex <- Seed.nextInt(4)
-      op = opForInt(opIndex)
+      opIndex <- Seed.nextInt(3)
+      op = Op.forInt(opIndex).getOrElse(sys.error(s"Bug: $opIndex"))
     } yield {
       (Num(value), op, valuePool diff List(value))
     }
@@ -94,6 +131,6 @@ object Equation {
         (newPool, newRnd, num +: op +: result)
     }
     // drop the last operation
-    rnd -> equation.init
+    rnd -> Equation(equation.init)
   }
 }
