@@ -27,8 +27,8 @@ final case class Equation(expression: Seq[Element]) {
         }
       case Num(x) =>
         val remainingNumbers = inputNumbers - x
-        Seed.nextInt(remainingNumbers.size - 1).map { index =>
-          val newNum = remainingNumbers.toSeq(index)
+        Seed.nextInt(remainingNumbers.size - 1).map { numIdx =>
+          val newNum = remainingNumbers.toSeq(numIdx)
           swap(index, Num(newNum))
         }
     }
@@ -39,9 +39,8 @@ final case class Equation(expression: Seq[Element]) {
     copy(expression = changed)
   }
 
-  override def toString = {
-    expression.mkString("", " ", " == " + eval)
-  }
+  override def toString = s"$expressionString == $eval"
+  def expressionString = expression.mkString(" ")
 
   lazy val eval: Option[Int] = Try(Equation.evalDouble(expression).map(_.toInt)).toOption.flatten
 
@@ -52,9 +51,8 @@ final case class Equation(expression: Seq[Element]) {
   def size = expression.size
 
   def combineAt(other: Equation, index: Int): Equation = {
-    val maxSize = size.min(other.size)
-
-    copy(expression = other.expression.take(index) ++ other.expression.drop(index))
+    val safeIndex = (size - 1).min(other.size - 1).min(index).max(1)
+    copy(expression = expression.take(safeIndex) ++ other.expression.drop(safeIndex))
   }
 
   def diff(targetNumber: Int): Int = {
