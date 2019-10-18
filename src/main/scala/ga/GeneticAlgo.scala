@@ -22,7 +22,7 @@ object GeneticAlgo {
 
     val settings = AlgoSettings[A]
 
-    println(population.mkString(s"Generation $generation:\n", "\n", "\n\n"))
+//    println(population.mkString(s"Generation $generation:\n", "\n", "\n\n"))
 
     // 2) sort on fitness
     population match {
