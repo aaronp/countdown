@@ -3,13 +3,13 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 import eie.io._
 
 ThisBuild / organization := "countdown"
-ThisBuild / scalaVersion := "2.13.0"
+ThisBuild / scalaVersion := "2.12.10"
 
 val projectName = "countdown"
 val username = "aaronp"
 val scalaTwelve = "2.12.10"
 val scalaThirteen = "2.13.0"
-val defaultScalaVersion = scalaThirteen
+val defaultScalaVersion = scalaTwelve
 
 name := projectName
 
@@ -21,7 +21,7 @@ enablePlugins(SiteScaladocPlugin)
 enablePlugins(ParadoxMaterialThemePlugin) // see https://jonas.github.io/paradox-material-theme/getting-started.html
 
 scalaVersion := defaultScalaVersion
-crossScalaVersions := Seq(scalaTwelve, scalaThirteen)
+crossScalaVersions := Seq(scalaTwelve) //, scalaThirteen)
 
 paradoxProperties += ("project.url" -> s"https://$username.github.io/$projectName/docs/current/")
 
@@ -33,7 +33,7 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
     libraryDependencies ++= List(
       "com.lihaoyi" %%% "scalatags" % "0.7.0",
       "com.lihaoyi" %%% "scalarx" % "0.4.0",
-      "org.scalatest" %%% "scalatest" % "3.0.7" % "test"
+      "org.scalatest" %%% "scalatest" % "3.0.8" % "test"
     ))
 
 lazy val gaProjectJVM = gaProject.jvm
@@ -108,7 +108,7 @@ buildInfoPackage := "countdown.build"
 
 // see http://scalameta.org/scalafmt/
 scalafmtOnCompile in ThisBuild := true
-scalafmtVersion in ThisBuild := "1.4.0"
+scalafmtVersion in ThisBuild := "1.5.1"
 
 // see http://www.scalatest.org/user_guide/using_scalatest_with_sbt
 testOptions in Test += (Tests
