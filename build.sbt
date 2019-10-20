@@ -170,8 +170,8 @@ makePage := {
     dir.toPath.mkDirs()
   }
 
-  val sharedResourceDir =
-    (baseDirectory.value / "shared" / "src" / "main" / "resources").toPath
+  val sharedResourceDir = (baseDirectory.value / "shared" / "src" / "main" / "resources").toPath
+
   val sharedJsLibs =
     List("springy.js", "springyui.js", "jquery.min.js").map(f =>
       sharedResourceDir.resolve(f))
