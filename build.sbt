@@ -1,4 +1,7 @@
+import java.nio.file.Path
+
 import org.scoverage.coveralls.Imports.CoverallsKeys._
+import sbt.KeyRanks
 import sbt.Keys.{libraryDependencies, publishMavenStyle}
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 import sbtrelease.ReleasePlugin.autoImport.releaseCrossBuild
@@ -94,13 +97,6 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
     libraryDependencies ++= List(
       "org.typelevel" %%% "cats-core" % "2.0.0"
     )
-
-    //      libraryDependencies ++= List(
-    //      "org.scalactic" %% "scalactic" % "3.0.8" % "test",
-    //      "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-    //      "org.pegdown" % "pegdown" % "1.6.0" % "test",
-    //      "junit" % "junit" % "4.12" % "test"
-    //    )
   )
   .jsSettings(
     libraryDependencies ++= List(
@@ -131,8 +127,6 @@ Compile / paradoxMaterialTheme ~= {
     .withoutSearch()
 }
 
-//scalacOptions += Seq("-encoding", "UTF-8")
-
 siteSourceDirectory := target.value / "paradox" / "site" / "main"
 
 siteSubdirName in SiteScaladoc := "api/latest"
@@ -152,12 +146,53 @@ publishTo := {
     Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
-credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
+//credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
 
-// https://coveralls.io/github/aaronp/countdown
-// https://github.com/scoverage/sbt-coveralls#specifying-your-repo-token
-coverallsTokenFile := Option(
-  (Path.userHome / ".sbt" / ".coveralls.countdown").asPath.toString)
+lazy val makePage =
+  taskKey[Unit]("Puts the javascript and html resources together")
+    .withRank(KeyRanks.APlusTask)
+
+makePage := {
+
+  import eie.io._
+
+  val jsArtifacts = {
+    val path: Path = (fastOptJS in (gaProjectJS, Compile)).value.data.asPath
+    val dependencyFiles =
+      path.getParent.find(_.fileName.endsWith("-jsdeps.js")).toList
+    val mapFile = path.getParent.find(_.fileName.endsWith(".js.map")).toList
+    path :: mapFile ::: dependencyFiles
+  }
+  val jsResourceDir = (resourceDirectory in (gaProjectJS, Compile)).value.toPath
+
+  val targetDir = {
+    val dir = baseDirectory.value / "target" / "page"
+    dir.toPath.mkDirs()
+  }
+
+  val sharedResourceDir =
+    (baseDirectory.value / "shared" / "src" / "main" / "resources").toPath
+  val sharedJsLibs =
+    List("springy.js", "springyui.js", "jquery.min.js").map(f =>
+      sharedResourceDir.resolve(f))
+
+  sLog.value.info(s"""targetDir is $targetDir
+       |resourceDir is $jsResourceDir
+       |jsArtifacts = $jsArtifacts
+       |""".stripMargin)
+
+  // always copy/clobber these
+  (jsResourceDir.children ++ jsArtifacts).foreach { file =>
+    targetDir.resolve(file.fileName).bytes = file.bytes
+  }
+  // copy these on demand
+  (sharedJsLibs).foreach { file =>
+    val tgt = targetDir.resolve(file.fileName)
+    if (!tgt.exists()) {
+      tgt.bytes = file.bytes
+    }
+  }
+}
 
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
 buildInfoPackage := "countdown.build"
