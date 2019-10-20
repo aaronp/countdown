@@ -4,11 +4,12 @@ class AlgoSettingsTest extends BaseSpec {
 
   "AlgoSettings.nextMateIndex" should {
     "return a neighbor index roughly 40% of the time, +/-2 roughly 10% of the time, +/-3 roughly 10% of the time, and some other value in range 40% of the time" in {
-      val (_, samples) = Iterator.from(0).take(10000).foldLeft(Seed(0) -> Seq.empty[Int]) {
-        case ((rnd, found), _) =>
-          val (newRnd, x) = AlgoSettings.nextMateIndex(15, 100).run(rnd).value
-          newRnd -> (x +: found)
-      }
+      val (_, samples) =
+        Iterator.from(0).take(10000).foldLeft(Seed(0) -> Seq.empty[Int]) {
+          case ((rnd, found), _) =>
+            val (newRnd, x) = AlgoSettings.nextMateIndex(15, 100).run(rnd).value
+            newRnd -> (x +: found)
+        }
       val size = samples.size.toDouble
 
       def nAway(n: Int)(x: Int) = x == 15 - n || x == 15 + n
@@ -33,7 +34,6 @@ class AlgoSettingsTest extends BaseSpec {
 
       Iterator.from(0).take(1000).foldLeft(Seed(0)) {
         case (s, _) =>
-
           locally {
             val index = AlgoSettings.nextMateIndex(0, 10).runA(s).value
             index should be > 0

@@ -17,23 +17,23 @@ final case class Seed(long: Long) {
 object Seed {
   def apply(init: Long = System.currentTimeMillis): Seed = new Seed(init)
 
-  def nextInt(max: Int): State[Seed, Int] = State(seed => (seed.next, seed.int(max)))
+  def nextInt(max: Int): State[Seed, Int] =
+    State(seed => (seed.next, seed.int(max)))
 
   /** @param percentile a value between 0.0 and 1.0. e.g. 0.25 should return true roughly 25% of the time
-   * @return a boolean with the given percentage (between 0 and 1.0) of returning true
-   */
+    * @return a boolean with the given percentage (between 0 and 1.0) of returning true
+    */
   def weightedBoolean(percentile: Double): State[Seed, Boolean] = {
     require(percentile >= 0.0)
     require(percentile <= 1.0)
     nextDouble.map(_ < percentile)
   }
 
-  val nextLong: State[Seed, Long] = State(seed =>
-    (seed.next, seed.long))
+  val nextLong: State[Seed, Long] = State(seed => (seed.next, seed.long))
 
   /**
-   * a state which returns a double between 0.0 and 1.0
-   */
+    * a state which returns a double between 0.0 and 1.0
+    */
   val nextDouble: State[Seed, Double] = nextLong.map { i =>
     (i / Long.MaxValue.toDouble).abs
   }

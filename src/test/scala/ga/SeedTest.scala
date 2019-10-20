@@ -19,11 +19,12 @@ class SeedTest extends BaseSpec {
       }
     }
     "should return true roughly 25% of the time for .25" in {
-      val (_, booleans) = Iterator.from(0).take(10000).foldLeft(Seed(7) -> Seq.empty[Boolean]) {
-        case ((s, found), _) =>
-          val (next, b) = Seed.weightedBoolean(0.25).run(s).value
-          next -> (b +: found)
-      }
+      val (_, booleans) =
+        Iterator.from(0).take(10000).foldLeft(Seed(7) -> Seq.empty[Boolean]) {
+          case ((s, found), _) =>
+            val (next, b) = Seed.weightedBoolean(0.25).run(s).value
+            next -> (b +: found)
+        }
       val actual = booleans.count(identity).toDouble / booleans.size
       actual shouldBe 0.25 +- 0.001
     }
@@ -48,18 +49,20 @@ class SeedTest extends BaseSpec {
     )
     ranges.foreach {
       case (from, to) =>
-
         s"return values between $from and $to for some value" in {
-          val (_, found) = Iterator.from(0).take(10000).foldLeft((Seed(0), Seq.empty[(Seed, Double)])) {
-            case ((s, found), _) =>
-              val (next, value) = Seed.nextDouble.run(s).value
-              val list = if (value >= from && value <= to) {
-                (s, value) +: found
-              } else {
-                found
-              }
-              (next, list)
-          }
+          val (_, found) = Iterator
+            .from(0)
+            .take(10000)
+            .foldLeft((Seed(0), Seq.empty[(Seed, Double)])) {
+              case ((s, found), _) =>
+                val (next, value) = Seed.nextDouble.run(s).value
+                val list = if (value >= from && value <= to) {
+                  (s, value) +: found
+                } else {
+                  found
+                }
+                (next, list)
+            }
           found should not be empty
         }
     }

@@ -1,15 +1,15 @@
 package countdown
 
 /**
- * Represents either a number or an operation in the countdown space
- */
+  * Represents either a number or an operation in the countdown space
+  */
 sealed trait Element
 
 final case class Num(x: Int) extends Element {
   override def toString = x.toString
 }
 
-abstract class Op(override val toString: String, val index : Int) extends Element
+abstract class Op(override val toString: String, val index: Int) extends Element
 
 object Op {
 
@@ -17,13 +17,9 @@ object Op {
   def forInt(x: Int): Option[Op] = {
     values.find(_.index == x)
   }
-
-
-  private def gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
 }
 
-
-final case object Add extends Op("+",0 )
+final case object Add extends Op("+", 0)
 
 final case object Subtract extends Op("-", 1)
 

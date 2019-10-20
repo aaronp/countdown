@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-sbt clean coverage test coverageReport coveralls
+
+sbt clean coverage test coverageReport
 
 cp -r target/scala-2.12/scoverage-report target
 
