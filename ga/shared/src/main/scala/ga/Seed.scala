@@ -2,14 +2,23 @@ package ga
 
 import cats.data.State
 
+import scala.util.Try
+import scala.util.control.NonFatal
+
 final case class Seed(long: Long) {
   def next = Seed(long * 6364136223846793005L + 1442695040888963407L)
 
-  private def int(max: Int): Int = {
+  private def int(maxSigned: Int): Int = {
+    val max = maxSigned.abs
     if (max == 0) {
       0
     } else {
-      (long.abs % (max + 1)).toInt
+      try {
+        (long.abs % (max + 1)).toInt
+      } catch {
+        case NonFatal(e) =>
+          throw new IllegalArgumentException(s"int failed w/ max=$max, long=$long, long.abs=${long.abs}, long.abs % (max + 1) is ${Try(long.abs % (max + 1))}")
+      }
     }
   }
 }

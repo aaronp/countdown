@@ -21,12 +21,21 @@ final case class Equation(expression: Seq[Element]) {
   }
 
   /**
-    * Alter this equation, changing the value at 'index'
-    *
-    * @param index
-    * @param inputNumbers
-    * @return
-    */
+   * @param unsafeIndex
+   * @return an equation at the shorted length
+   */
+  def truncate(unsafeIndex: Int) = {
+    unsafeIndex.max(1) match {
+      case n if n % 2 == 0 =>
+        val index = (n - 1).max(1).min(size)
+        copy(expression.take(index))
+      case n =>
+        val index = n.min(size)
+        copy(expression.take(index))
+    }
+
+  }
+
   def mutateAt(index: Int, inputNumbers: Set[Int]): State[Seed, Equation] = {
     val elm = expression(index)
     elm match {
@@ -81,11 +90,11 @@ final case class Equation(expression: Seq[Element]) {
 object Equation {
 
   private[countdown] final def reduce(
-      elements: Seq[Element]): Option[Seq[Element]] = {
+                                       elements: Seq[Element]): Option[Seq[Element]] = {
     import cats.syntax.option._
     elements match {
       case Num(x) +: Divide +: Num(y) +: theRest =>
-        if (x % y == 0) {
+        if (y != 0 && x % y == 0) {
           reduce(Num(x / y) +: theRest)
         } else {
           Option.empty[Seq[Element]]
@@ -93,13 +102,13 @@ object Equation {
       case Num(x) +: Multiply +: Num(y) +: theRest =>
         reduce(Num(x * y) +: theRest)
       case Num(x) +: op +: theRest => reduce(theRest).map(Num(x) +: op +: _)
-      case seq                     => seq.some
+      case seq => seq.some
     }
   }
 
   private[countdown] final def evalReduced(eq: Seq[Element]): Int = {
     eq match {
-      case Seq(Num(x))              => x
+      case Seq(Num(x)) => x
       case Num(x) +: Add +: theRest => x + evalReduced(theRest)
       case Num(x) +: Subtract +: Num(y) +: theRest =>
         evalReduced(Num(x - y) +: theRest)
@@ -129,7 +138,7 @@ object Equation {
       case "-" => Subtract
       case "*" => Multiply
       case "/" => Divide
-      case i   => Num(i.toInt)
+      case i => Num(i.toInt)
     }
     new Equation(expression)
   }
@@ -158,6 +167,7 @@ object Equation {
   def equationOfLen(size: Int,
                     fromValues: Set[Int],
                     seed: Seed): (Seed, Equation) = {
+    require(fromValues.nonEmpty, "No input values specified")
     def next(valuePool: List[Int]) =
       for {
         index <- Seed.nextInt(valuePool.size - 1)
