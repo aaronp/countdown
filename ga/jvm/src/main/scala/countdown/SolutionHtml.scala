@@ -1,9 +1,9 @@
 package countdown
 
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path}
 
 import cats.Show
-import ga.HtmlRenderer.javascriptCode
+import ga.HtmlRenderer.htmlCode
 import ga.{Geneology, Node}
 
 object SolutionHtml {
@@ -21,7 +21,7 @@ object SolutionHtml {
       val n = Node(soln, maxNodes)
       n.copy(color = "#FF0000")
     }
-    val javascript = javascriptCode(solutionNode)
+    val javascript = htmlCode(solutionNode)
 
     Files.createDirectories(dir)
     writeJsLib(dir, "springy.js")
@@ -31,8 +31,4 @@ object SolutionHtml {
     Files.write(dir.resolve("solution.html"), javascript.getBytes)
   }
 
-  def writeTo[A: Show](geneology: Geneology[A], maxNodes: Int) = {
-    val javascript = javascriptCode(Node(geneology, maxNodes))
-    Files.write(Paths.get("solution.html"), javascript.getBytes)
-  }
 }

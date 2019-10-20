@@ -1,22 +1,11 @@
 package ga
 
-import java.nio.file.{Files, Path, Paths}
-
-import cats.Show
-
 object HtmlRenderer {
 
-  def javascriptCode(node: Node): String = {
+  def javascriptCode(node: Node, canvasId : String): String = {
     val defns = nodeCode(node)
     val edges = edgeCode(node)
-
-    s"""<html>
-       |<body>
-       |<script src="jquery.min.js"></script>
-       |<script src="springy.js"></script>
-       |<script src="springyui.js"></script>
-       |<script>
-       |var graph = new Springy.Graph();
+    s"""var graph = new Springy.Graph();
        |
        |${defns}
        |
@@ -29,14 +18,23 @@ object HtmlRenderer {
        |      console.log('Node selected: ' + JSON.stringify(node.data));
        |    }
        |  });
-       |});
+       |});""".stripMargin
+  }
+
+  def htmlCode(node: Node): String = {
+    val canvasId = "layout"
+    s"""<html>
+       |<body>
+       |<script src="jquery.min.js"></script>
+       |<script src="springy.js"></script>
+       |<script src="springyui.js"></script>
+       |<script>
+       |${javascriptCode(node, canvasId)}
        |</script>
        |
-       |<canvas id="layout" width="1280" height="960" />
+       |<canvas id="$canvasId" width="1280" height="960" />
        |</body>
-       |</html>
-       |
-       |""".stripMargin
+       |</html>""".stripMargin
   }
 
   private def nodeCode(node: Node): String = {
