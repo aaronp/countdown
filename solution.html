@@ -1,0 +1,90 @@
+<html>
+<body>
+<script src="jquery.min.js"></script>
+<script src="springy.js"></script>
+<script src="springyui.js"></script>
+<script>
+var graph = new Springy.Graph();
+
+var _n19 = graph.newNode({color: '#FF0000', label: '(Gen22#2) 5 + 6 / 3 = 7'});
+var m_n19_n8 = graph.newNode({color: '#0000FF', label: '(Gen21#3) 5 + 6 / 3 = 7'});
+var mm_n19_n8_n3 = graph.newNode({color: '#00FF00', label: 'Mutation 5 + 3 / 3 = 6'});
+var mm_n19_n8_n2 = graph.newNode({color: '#0000FF', label: '(Gen20#15) 5 + 3 - 3 = 5'});
+var mmm_n19_n8_n2_n0 = graph.newNode({color: '#0000FF', label: '(Gen19#78) 5 + 5 - 8 = 2'});
+
+
+var dmm_n19_n8_n2_n0 = graph.newNode({color: '#0000FF', label: '(Gen19#12) 3 + 3 - 3 = 3'});
+
+
+
+
+var dm_n19_n8_n3 = graph.newNode({color: '#0000FF', label: '(Gen20#6) 5 + 6 / 3 = 7'});
+var mdm_n19_n8_n3_n0 = graph.newNode({color: '#0000FF', label: '(Gen19#19) 5 + 3 - 3 = 5'});
+
+
+var ddm_n19_n8_n3_n0 = graph.newNode({color: '#0000FF', label: '(Gen19#9) 6 + 6 / 3 = 8'});
+
+
+
+
+var d_n19_n8 = graph.newNode({color: '#0000FF', label: '(Gen21#4) 6 + 3 / 3 = 7'});
+var md_n19_n8_n3 = graph.newNode({color: '#0000FF', label: '(Gen20#4) 6 + 6 / 3 = 8'});
+var mmd_n19_n8_n3_n0 = graph.newNode({color: '#0000FF', label: '(Gen19#9) 6 + 6 / 3 = 8'});
+
+
+var dmd_n19_n8_n3_n0 = graph.newNode({color: '#0000FF', label: '(Gen19#18) 6 + 3 - 3 = 6'});
+
+
+
+var dd_n19_n8_n3 = graph.newNode({color: '#00FF00', label: 'Mutation 5 + 3 / 3 = 6'});
+var dd_n19_n8_n2 = graph.newNode({color: '#0000FF', label: '(Gen20#15) 5 + 3 - 3 = 5'});
+var mdd_n19_n8_n2_n0 = graph.newNode({color: '#0000FF', label: '(Gen19#78) 5 + 5 - 8 = 2'});
+
+
+var ddd_n19_n8_n2_n0 = graph.newNode({color: '#0000FF', label: '(Gen19#12) 3 + 3 - 3 = 3'});
+
+
+
+
+
+
+
+graph.newEdge(_n19, m_n19_n8, {color: '#00FF00'});
+graph.newEdge(_n19, d_n19_n8, {color: '#00FF00'});
+graph.newEdge(m_n19_n8, mm_n19_n8_n3, {color: '#00FF00'});
+graph.newEdge(m_n19_n8, dm_n19_n8_n3, {color: '#00FF00'});
+graph.newEdge(mm_n19_n8_n3, mm_n19_n8_n2, {color: '#00FF00'});
+graph.newEdge(mm_n19_n8_n2, mmm_n19_n8_n2_n0, {color: '#00FF00'});
+graph.newEdge(mm_n19_n8_n2, dmm_n19_n8_n2_n0, {color: '#00FF00'});
+
+
+graph.newEdge(dm_n19_n8_n3, mdm_n19_n8_n3_n0, {color: '#00FF00'});
+graph.newEdge(dm_n19_n8_n3, ddm_n19_n8_n3_n0, {color: '#00FF00'});
+
+
+graph.newEdge(d_n19_n8, md_n19_n8_n3, {color: '#00FF00'});
+graph.newEdge(d_n19_n8, dd_n19_n8_n3, {color: '#00FF00'});
+graph.newEdge(md_n19_n8_n3, mmd_n19_n8_n3_n0, {color: '#00FF00'});
+graph.newEdge(md_n19_n8_n3, dmd_n19_n8_n3_n0, {color: '#00FF00'});
+
+
+graph.newEdge(dd_n19_n8_n3, dd_n19_n8_n2, {color: '#00FF00'});
+graph.newEdge(dd_n19_n8_n2, mdd_n19_n8_n2_n0, {color: '#00FF00'});
+graph.newEdge(dd_n19_n8_n2, ddd_n19_n8_n2_n0, {color: '#00FF00'});
+
+
+
+jQuery(function(){
+  var springy = window.springy = jQuery('#layout').springy({
+    graph: graph,
+    nodeSelected: function(node){
+      console.log('Node selected: ' + JSON.stringify(node.data));
+    }
+  });
+});
+</script>
+
+<canvas id="layout" width="1280" height="960" />
+</body>
+</html>
+
