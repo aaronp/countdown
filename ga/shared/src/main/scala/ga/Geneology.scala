@@ -7,7 +7,9 @@ sealed trait Geneology[A] {
   def value: A
 }
 
-case class Origin[A: Show](override val value: A) extends Geneology[A]
+case class Origin[A: Show](override val value: A) extends Geneology[A] {
+  override def toString = value.show
+}
 
 case class Offspring[A: Show](override val value: A,
                               generation: Int,

@@ -1,11 +1,12 @@
 import org.scoverage.coveralls.Imports.CoverallsKeys._
+import sbt.Keys.{libraryDependencies, publishMavenStyle}
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
-import eie.io._
+import sbtrelease.ReleasePlugin.autoImport.releaseCrossBuild
 
-ThisBuild / organization := "countdown"
+ThisBuild / organization := "com.github.aaronp"
 ThisBuild / scalaVersion := "2.12.10"
 
-val projectName = "countdown"
+val projectName = "ga"
 val username = "aaronp"
 val scalaTwelve = "2.12.10"
 val scalaThirteen = "2.13.0"
@@ -21,14 +22,86 @@ enablePlugins(SiteScaladocPlugin)
 enablePlugins(ParadoxMaterialThemePlugin) // see https://jonas.github.io/paradox-material-theme/getting-started.html
 
 scalaVersion := defaultScalaVersion
-crossScalaVersions := Seq(scalaTwelve) //, scalaThirteen)
+val scalaVersions = Seq(scalaTwelve)
+crossScalaVersions := scalaVersions //, scalaThirteen)
 
 paradoxProperties += ("project.url" -> s"https://$username.github.io/$projectName/docs/current/")
+
+val testDependencies = List(
+  "junit" % "junit" % "4.12" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.8" % "test",
+  "org.scala-lang.modules" %% "scala-xml" % "1.1.1" % "test",
+  "org.pegdown" % "pegdown" % "1.6.0" % "test"
+)
+
+val scalacSettings = List(
+  "-deprecation", // Emit warning and location for usages of deprecated APIs.
+  "-encoding",
+  "utf-8", // Specify character encoding used by source files.
+  "-feature", // Emit warning and location for usages of features that should be imported explicitly.
+  "-language:reflectiveCalls", // Allow reflective calls
+  "-language:higherKinds", // Allow higher-kinded types
+  "-language:implicitConversions", // Allow definition of implicit functions called views
+  "-unchecked",
+  "-language:reflectiveCalls", // Allow reflective calls
+  "-language:higherKinds", // Allow higher-kinded types
+  "-language:implicitConversions", // Allow definition of implicit functions called views
+  //"-Xlog-implicits",
+  "-Xfuture" // Turn on future language features.
+)
+
+val commonSettings: Seq[Def.Setting[_]] = Seq(
+  //version := parentProject.settings.ver.value,
+  organization := s"com.github.${username}",
+  scalaVersion := defaultScalaVersion,
+  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  autoAPIMappings := true,
+  exportJars := false,
+  crossScalaVersions := scalaVersions,
+  libraryDependencies ++= testDependencies,
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
+  scalacOptions ++= scalacSettings,
+  buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+  buildInfoPackage := s"${projectName}.build",
+  test in assembly := {},
+  assemblyMergeStrategy in assembly := {
+    case str if str.contains("application.conf") => MergeStrategy.discard
+    case x =>
+      val oldStrategy = (assemblyMergeStrategy in assembly).value
+      oldStrategy(x)
+  }
+  // see http://www.scalatest.org/user_guide/using_scalatest_with_sbt
+  //(testOptions in Test) += (Tests.Argument(TestFrameworks.ScalaTest, "-h", s"target/scalatest-reports-${name.value}", "-oN"))
+)
 
 val gaProject = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
   .withoutSuffixFor(JVMPlatform)
-  .in(file("."))
+  .in(file("ga"))
+  .jvmSettings(commonSettings: _*)
+  .jvmSettings(
+    publishMavenStyle := true,
+    releaseCrossBuild := true,
+    coverageMinimum := 90,
+    coverageFailOnMinimum := true
+  )
+  .jvmSettings(
+    libraryDependencies ++= List(
+      "com.typesafe" % "config" % "1.3.4",
+      "com.github.aaronp" %% "args4c" % "0.7.0"
+    ))
+  .settings(
+    libraryDependencies ++= List(
+      "org.typelevel" %%% "cats-core" % "2.0.0"
+    )
+
+    //      libraryDependencies ++= List(
+    //      "org.scalactic" %% "scalactic" % "3.0.8" % "test",
+    //      "org.scalatest" %% "scalatest" % "3.0.8" % "test",
+    //      "org.pegdown" % "pegdown" % "1.6.0" % "test",
+    //      "junit" % "junit" % "4.12" % "test"
+    //    )
+  )
   .jsSettings(
     libraryDependencies ++= List(
       "com.lihaoyi" %%% "scalatags" % "0.7.0",
@@ -64,23 +137,6 @@ siteSourceDirectory := target.value / "paradox" / "site" / "main"
 
 siteSubdirName in SiteScaladoc := "api/latest"
 
-libraryDependencies ++= List(
-  "com.typesafe" % "config" % "1.3.4",
-  "com.github.aaronp" %% "args4c" % "0.7.0",
-  "org.typelevel" %% "cats-core" % "2.0.0"
-)
-
-libraryDependencies ++= List(
-  "org.scalactic" %% "scalactic" % "3.0.8" % "test",
-  "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-  "org.pegdown" % "pegdown" % "1.6.0" % "test",
-  "junit" % "junit" % "4.12" % "test"
-)
-
-publishMavenStyle := true
-releaseCrossBuild := true
-coverageMinimum := 90
-coverageFailOnMinimum := true
 git.remoteRepo := s"git@github.com:$username/countdown.git"
 ghpagesNoJekyll := true
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
@@ -108,14 +164,18 @@ buildInfoPackage := "countdown.build"
 
 // see http://scalameta.org/scalafmt/
 scalafmtOnCompile in ThisBuild := true
-scalafmtVersion in ThisBuild := "1.5.1"
+scalafmtVersion in ThisBuild := "1.4.0"
 
 // see http://www.scalatest.org/user_guide/using_scalatest_with_sbt
 testOptions in Test += (Tests
   .Argument(TestFrameworks.ScalaTest, "-h", s"target/scalatest-reports", "-oN"))
 
 pomExtra := {
-  <url>https://github.com/{username}/{projectName}</url>
+  <url>https://github.com/
+    {username}
+    /
+    {projectName}
+  </url>
     <licenses>
       <license>
         <name>Apache 2</name>
@@ -125,9 +185,15 @@ pomExtra := {
     </licenses>
     <developers>
       <developer>
-        <id>{username}</id>
-        <name>{username}</name>
-        <url>http://github.com/{username}</url>
+        <id>
+          {username}
+        </id>
+        <name>
+          {username}
+        </name>
+        <url>http://github.com/
+          {username}
+        </url>
       </developer>
     </developers>
 }
