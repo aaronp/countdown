@@ -1,4 +1,5 @@
 import org.scoverage.coveralls.Imports.CoverallsKeys._
+import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 import eie.io._
 
 ThisBuild / organization := "countdown"
@@ -23,6 +24,30 @@ scalaVersion := defaultScalaVersion
 crossScalaVersions := Seq(scalaTwelve, scalaThirteen)
 
 paradoxProperties += ("project.url" -> s"https://$username.github.io/$projectName/docs/current/")
+
+val gaProject = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Full)
+  .withoutSuffixFor(JVMPlatform)
+  .in(file("."))
+  .jsSettings(
+    libraryDependencies ++= List(
+      "com.lihaoyi" %%% "scalatags" % "0.7.0",
+      "com.lihaoyi" %%% "scalarx" % "0.4.0",
+      "org.scalatest" %%% "scalatest" % "3.0.7" % "test"
+    ))
+
+lazy val gaProjectJVM = gaProject.jvm
+lazy val gaProjectJS = gaProject.js
+
+lazy val root = (project in file("."))
+  .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(SiteScaladocPlugin)
+  .enablePlugins(ParadoxPlugin)
+  .aggregate(gaProjectJVM, gaProjectJS)
+  .settings(
+    publish := {},
+    publishLocal := {}
+  )
 
 Compile / paradoxMaterialTheme ~= {
   _.withLanguage(java.util.Locale.ENGLISH)
