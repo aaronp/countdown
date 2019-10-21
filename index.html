@@ -15,15 +15,18 @@
 </head>
 <body onload="init('slider')">
 <div style="height:120px">
-    <button onclick="jumpToBeginning()">Configure</button>
+    <button onclick="jumpToBeginning()">About</button>
+    <button onclick="jumpToConfig()">Configure</button>
     <button onclick="jumpToComputeFrame()">Workings Out</button>
     <button onclick="jumpToSolutionFrame()">Solution</button>
 </div>
 
 <div id='slider' class='swipe'>
     <div class='swipe-wrap'>
+        <div id="about">
+            This is a genetic algorithm example
+        </div>
         <div id="config">
-            <span class="dot">1</span>
         </div>
         <div id="compute" class="compute" style="overflow-y:visible;">
 

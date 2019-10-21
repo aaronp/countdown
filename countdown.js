@@ -1,4 +1,4 @@
-var slideSpeed = 400;
+var slideSpeed = 800;
 
 function transitionStart(idx, elm) {
   TransitionEvent.onTransitionStart(idx, elm);
@@ -6,32 +6,22 @@ function transitionStart(idx, elm) {
 function transitionEnd(idx, elm) {
   TransitionEvent.onTransitionEnd(idx, elm);
 }
-function right() {
-  mySwipe.next();
-}
-function left() {
-  mySwipe.prev();
-}
 function jumpToBeginning() {
-  var current = mySwipe.getPos();
-  var t = mySwipe.getNumSlides();
-  window.console.log("current pos is " + current + " of " + t);
   mySwipe.slide(0, slideSpeed);
 }
-function jumpToComputeFrame() {
-  var current = mySwipe.getPos();
-  var t = mySwipe.getNumSlides();
-  window.console.log("jumpToComputeFrame: current pos is " + current + " of " + t);
+function jumpToConfig() {
   mySwipe.slide(1, slideSpeed);
 }
-function jumpToSolutionFrame() {
-  var current = mySwipe.getPos();
-  var t = mySwipe.getNumSlides();
-  window.console.log("jumpToSolutionFrame : current pos is " + current + " of " + t);
+function jumpToComputeFrame() {
   mySwipe.slide(2, slideSpeed);
 }
-
-
+function jumpToSolutionFrame() {
+  mySwipe.slide(3, slideSpeed);
+}
+function clearGraph() {
+      springy.graph.nodes = [];
+      springy.graph.edges = [];
+}
 function init(id) {
   window.mySwipe = new Swipe(document.getElementById(id), {
       startSlide: 0,
