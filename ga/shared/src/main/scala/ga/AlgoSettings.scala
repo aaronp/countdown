@@ -156,29 +156,36 @@ object AlgoSettings {
                                 populationSize: PopulationSize): State[Seed, Int] = {
     def inRange(x: Int) = x != forIndex && x >= 0 && x < populationSize
 
-    val range: State[Seed, Seq[Int]] = Seed.nextDouble.map {
+    val range = Seed.nextDouble.map {
       case n if n < 0.4 =>
-        Seq(-1, 1).map(forIndex + _) // 40% chance to use one away
+        n -> Seq(-1, 1).map(forIndex + _) // 40% chance to use one away
       case n if n < 0.5 =>
-        Seq(-2, 2).map(forIndex + _) // 10% chance to use two away
+        n -> Seq(-2, 2).map(forIndex + _) // 10% chance to use two away
       case n if n < 0.6 =>
-        Seq(-3, 3).map(forIndex + _) // 10% chance to use two away
+        n -> Seq(-3, 3).map(forIndex + _) // 10% chance to use two away
       case n => // 40% of just using some random mate
         val chosen = (populationSize * n).toInt
-        if (chosen == populationSize) {
+        val seq = if (chosen == populationSize) {
           Seq(populationSize, populationSize - 1, populationSize - 2)
         } else if (chosen == 0) {
           Seq(0, 1, 2)
         } else {
           Seq(chosen, chosen + 1, chosen - 1)
         }
+        n -> seq
     }
 
-    range.map { offsets =>
-      offsets
-        .find(inRange)
-        .getOrElse(sys.error(
-          s"Bug: Couldn't find a valid mate in $offsets for $forIndex and $populationSize"))
+
+    range.map {
+      case (rnd, offsets) =>
+        def safeDefault = {
+          (0 to populationSize).find(inRange).getOrElse(sys.error(
+            s"Bug: Couldn't find a valid mate in $offsets for index $forIndex of population size $populationSize when given $rnd"))
+        }
+
+        offsets
+          .find(inRange)
+          .getOrElse(safeDefault)
     }
   }
 }

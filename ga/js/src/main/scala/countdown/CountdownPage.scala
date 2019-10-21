@@ -38,15 +38,14 @@ object CountdownPage {
     val logContainer =
       textarea(`class` := "logs", cols := 200, rows := 1000).render
     computeContainer.appendChild(logContainer)
-    window.console.log(s"Appending textarea to $computeContainerId")
 
     // a function we pass in to log progress
     def logGeneration(generation: Generation[Equation]) = {
       val (gen, population) = generation
       val sep = "-" * 120
-      val heading = s"Generation $gen:\n$sep\n"
+      val header = s"\n$sep\nGeneration $gen:\n"
 
-      val content = population.mkString(s"$heading", "\n", "\n")
+      val content = population.mkString(header, "\n", "")
       window.console.info(content)
 
       logContainer.value += content
@@ -62,46 +61,6 @@ object CountdownPage {
     container.appendChild(form.render)
   }
 
-  private def renderSolution(scriptContainer: Div,
-                             resultCanvasId: String,
-                             targetValue: Int,
-                             solutionOpt: Option[Geneology[Equation]],
-                             maxNodes: Int): Unit = {
-
-    val canvas = HtmlUtils.canvasById(resultCanvasId)
-
-    // let's render the height as less than the full window height
-    def windowHeight = (0.8 * window.innerHeight).toInt
-
-    canvas.width = window.innerWidth.toInt
-    canvas.height = windowHeight
-    window.onresize = _ => {
-      canvas.width = window.innerWidth.toInt
-      canvas.height = windowHeight
-    }
-
-    solutionOpt match {
-      case Some(soln) =>
-        window.console.log(s"Solved: $soln")
-        val solutionNode: Node = {
-          implicit val show = Equation.showForTarget(targetValue)
-
-          val n = Node(soln, maxNodes)
-          n.copy(color = "#FF0000")
-        }
-
-        val scriptContents =
-          HtmlRenderer.javascriptCode(solutionNode, resultCanvasId)
-
-        window.console.log(s"scriptContents is $scriptContents")
-        scriptContainer.innerHTML = ""
-        scriptContainer.appendChild(script(scriptContents).render)
-      case None =>
-        window.console.log("No solution")
-        scriptContainer.innerHTML = "No Solution"
-    }
-  }
-
   private def computeSolution(scriptContainer: Div, resultCanvasId: String)(
       cfg: CountdownConfig,
       maxNodes: Int) = {
@@ -113,11 +72,11 @@ object CountdownPage {
     TransitionEvent.registerListener {
       case event: TransitionEnd if event.isSolutionTarget =>
         global.execute(() => {
-          renderSolution(scriptContainer,
-                         resultCanvasId,
-                         cfg.targetValue,
-                         solution,
-                         maxNodes)
+          ForcedLayoutSolution.renderSolution(scriptContainer,
+                                              resultCanvasId,
+                                              cfg.targetValue,
+                                              solution,
+                                              maxNodes)
         })
         true
     }

@@ -1,5 +1,3 @@
 package countdown
 
-final case class FormElement() {
-
-}
+final case class FormElement() {}
