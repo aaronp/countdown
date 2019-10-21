@@ -6,8 +6,10 @@ import org.scalajs.dom.window
 import scalatags.JsDom.all.{`class`, _}
 
 import scala.util.Try
-import scala.util.control.NonFatal
 
+/**
+  * Rendering of our configuration form
+  */
 object ConfigForm {
 
   def apply(logGeneration: Generation[Equation] => Unit,
@@ -31,7 +33,9 @@ object ConfigForm {
     val (tgtNrLi, tgtNr) =
       makeLi("Target Number", "12", "The number we're trying to find")
     val (usingLi, using) =
-      makeLi("Using", "1,2,3,4,5", "The input numbers we can use")
+      makeLi("Using Input Numbers",
+             "3 4 6 1",
+             "The numbers available to reach the target numbrer")
     val (seedLi, seed) = makeLi("Seed", "", "Our random number seed - optional")
     val (maxGenLi, maxGen) = makeLi(
       "Max Generations",
@@ -74,57 +78,50 @@ object ConfigForm {
 
     val submit = input(`type` := "submit", value := "Solve").render
     submit.onclick = e => {
+      window.console.info("solve click")
       e.preventDefault()
       e.stopPropagation()
-      window.console.info(
-        s"Compute... Long.MaxValue.toDouble is ${Long.MaxValue.toDouble}")
 
-      try {
-        val targetNumber = tgtNr.value.toInt
+      val targetNumber = tgtNr.value.toInt
 
-        val settings = CountdownConfig.makeAlgoSettings(
-          targetNumber = targetNumber,
-          inputNumbers = inputNumbers.getOrElse(Set.empty),
-          maxPopulation = popSize.value.toInt,
-          mutationProbability = mutationProb.value.toDouble,
-          maxGenerations = maxGen.value.toInt
-        )
+      val settings = CountdownConfig.makeAlgoSettings(
+        targetNumber = targetNumber,
+        inputNumbers = inputNumbers.getOrElse(Set.empty),
+        maxPopulation = popSize.value.toInt,
+        mutationProbability = mutationProb.value.toDouble,
+        maxGenerations = maxGen.value.toInt
+      )
 
-        val rnd = {
-          val lngValue =
-            Try(seed.value.toLong).getOrElse(System.currentTimeMillis)
-          Seed(lngValue)
-        }
-        window.console.info(s"""tgtNr.value='${tgtNr.value}'
-             |using.value='${using.value}', inputNumbers -> $inputNumbers
-             |maxPopulation='${popSize.value}'
-             |mutationProbability='${mutationProb.value}'
-             |minEqSize='${minEqSize.value}'
-             |maxGenerations='${maxGen.value}'
-             |seed='${seed.value}'
-             |""".stripMargin)
-
-        window.console.info(s"settings is $settings")
-
-        val countdownCfg = new CountdownConfig(
-          settings = settings,
-          rand = rnd,
-          inputValues = inputNumbers.getOrElse(Set.empty),
-          targetValue = targetNumber,
-          logGeneration,
-          minEquationSize = minEqSize.value.toInt,
-          maxEquationSize = inputNumbers.getOrElse(Set.empty).size,
-          None
-        )
-
-        window.console.info(s"CountdownConfig is $countdownCfg")
-
-        onSolve(countdownCfg, maxNodes.value.toInt)
-      } catch {
-        case NonFatal(e) =>
-          window.console.info(s"Bang: $e\n${e.getStackTrace.mkString("\n")}")
-
+      val rnd = {
+        val lngValue =
+          Try(seed.value.toLong).getOrElse(System.currentTimeMillis)
+        Seed(lngValue)
       }
+      window.console.info(s"""tgtNr.value='${tgtNr.value}'
+           |using.value='${using.value}', inputNumbers -> $inputNumbers
+           |maxPopulation='${popSize.value}'
+           |mutationProbability='${mutationProb.value}'
+           |minEqSize='${minEqSize.value}'
+           |maxGenerations='${maxGen.value}'
+           |seed='${seed.value}'
+           |""".stripMargin)
+
+      window.console.info(s"settings is $settings")
+
+      val countdownCfg = new CountdownConfig(
+        settings = settings,
+        rand = rnd,
+        inputValues = inputNumbers.getOrElse(Set.empty),
+        targetValue = targetNumber,
+        logGeneration,
+        minEquationSize = minEqSize.value.toInt,
+        maxEquationSize = inputNumbers.getOrElse(Set.empty).size,
+        None
+      )
+
+      window.console.info(s"CountdownConfig is $countdownCfg")
+
+      onSolve(countdownCfg, maxNodes.value.toInt)
     }
 
     form(`class` := "form-style-7")(

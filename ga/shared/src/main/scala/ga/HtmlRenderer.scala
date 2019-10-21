@@ -12,7 +12,7 @@ object HtmlRenderer {
        |${edges}
        |
        |jQuery(function(){
-       |  var springy = window.springy = jQuery('#layout').springy({
+       |  var springy = window.springy = jQuery('#${canvasId}').springy({
        |    graph: graph,
        |    nodeSelected: function(node){
        |      console.log('Node selected: ' + JSON.stringify(node.data));

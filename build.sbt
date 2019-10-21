@@ -157,8 +157,7 @@ makePage := {
     val path: Path = (fastOptJS in (gaProjectJS, Compile)).value.data.asPath
     val dependencyFiles =
       path.getParent.find(_.fileName.endsWith("-jsdeps.js")).toList
-    val mapFile = path.getParent.find(_.fileName.endsWith(".js.map")).toList
-    path :: mapFile ::: dependencyFiles
+    path :: dependencyFiles
   }
   val jsResourceDir = (resourceDirectory in (gaProjectJS, Compile)).value.toPath
 
@@ -168,8 +167,8 @@ makePage := {
     (baseDirectory.value / "ga" / "shared" / "src" / "main" / "resources").toPath
 
   val sharedJsLibs =
-    List("springy.js", "springyui.js", "jquery.min.js").map(f =>
-      sharedResourceDir.resolve(f))
+    List("springy.js", "springyui.js", "jquery.min.js")
+      .map(f => sharedResourceDir.resolve(f))
 
   // always copy/clobber these
   val clobberFiles = (jsResourceDir.children ++ jsArtifacts).map { file =>

@@ -66,8 +66,7 @@ object GeneticAlgo {
     //
     // for each record, mate it with one or more other records (passing on our random seed to determine the output)
     //
-    val (newSeed, newGeneration) = originalPopulation.zipWithIndex.foldLeft(
-      initialSeed -> IndexedSeq.empty[Geneology[A]]) {
+    val (newSeed, newGeneration) = originalPopulation.zipWithIndex.foldLeft(initialSeed -> IndexedSeq.empty[Geneology[A]]) {
       case ((nextSeed, results: IndexedSeq[Geneology[A]]), (mom, i)) =>
         //
         // find out who to randomly mate with
