@@ -130,7 +130,7 @@ object FormElement {
       1000)
     val populationSize = FormElement.int(
       "Population Size",
-      "100",
+      "200",
       "How large we should allow the population to grow")
 
     val mutationProbability = FormElement.double(

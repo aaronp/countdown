@@ -6,12 +6,19 @@ import org.scalajs.dom.window
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
+/**
+  *
+  * @param index the index of the 'div' within the sliding section in index.html.
+  * @param content
+  */
 sealed abstract class TransitionEvent(index: Int, content: Div) {
-  def isSetupTarget = index == 0
+  def isAboutTarget = index == 0
 
-  def isComputeTarget = index == 1
+  def isSetupTarget = index == 1
 
-  def isSolutionTarget = index == 2
+  def isComputeTarget = index == 2
+
+  def isSolutionTarget = index == 3
 }
 
 @JSExportTopLevel("TransitionEvent")

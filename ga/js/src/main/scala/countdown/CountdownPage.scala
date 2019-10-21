@@ -1,7 +1,7 @@
 package countdown
 
+import ga.Geneology
 import ga.GeneticAlgo.Generation
-import ga.{Geneology, HtmlRenderer, Node}
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.HTMLTextAreaElement
 import org.scalajs.dom.window
@@ -36,9 +36,10 @@ object CountdownPage {
     val computeContainer = HtmlUtils.divById(computeContainerId)
     computeContainer.innerHTML = ""
     val logContainer =
-      textarea(`class` := "logs", cols := 200, rows := 1000).render
+      textarea(`class` := "logs", cols := 200, rows := 400).render
     computeContainer.appendChild(logContainer)
 
+    var logContent = ListBuffer[String]()
     // a function we pass in to log progress
     def logGeneration(generation: Generation[Equation]) = {
       val (gen, population) = generation
