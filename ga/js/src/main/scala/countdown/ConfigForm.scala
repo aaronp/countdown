@@ -7,6 +7,8 @@ import org.scalajs.dom.window
 import scalatags.JsDom
 import scalatags.JsDom.all.{`class`, _}
 
+import scala.collection.immutable
+
 /**
   * Rendering of our configuration form
   */
@@ -19,17 +21,16 @@ object ConfigForm {
     val submit = input(`type` := "submit", value := "Solve").render
 
     submit.onclick = e => {
-      window.console.info("solve click")
       e.preventDefault()
       e.stopPropagation()
 
-      for {
+      val resOpt = for {
         (seed, settings) <- configListItems.asSettings
         inputNrs <- configListItems.inputNumbers.currentValue()
         targetValue <- configListItems.targetNr.currentValue()
         minEqSize <- configListItems.minEquationSize.currentValue()
         maxNodes <- configListItems.maxNodes.currentValue()
-      } {
+      } yield {
         val rnd = seed.getOrElse(System.currentTimeMillis())
         // stamp our random seed
         FormElement.configListItems.seed.inputElement.value = rnd.toString
@@ -49,6 +50,29 @@ object ConfigForm {
         window.console.info(s"CountdownConfig is $countdownCfg")
 
         onSolve(countdownCfg, maxNodes)
+      }
+
+      if (resOpt.isEmpty) {
+        val invalidFields = configListItems.elements.flatMap { elm =>
+          elm.currentValueEither match {
+            case Left(msg) => Option(elm.field -> msg)
+            case Right(_)  => None
+          }
+        }
+        invalidFields match {
+          case Seq() =>
+          case Seq((field, msg)) =>
+            window.alert(s"${field} is invalid: $msg")
+          case many =>
+            val msg = many
+              .map {
+                case (field, msg) => s"$field: $msg"
+              }
+              .mkString(s"${many.size} invalid fields:\n\n", "\n\n", "")
+
+            window.alert(msg)
+        }
+
       }
     }
 

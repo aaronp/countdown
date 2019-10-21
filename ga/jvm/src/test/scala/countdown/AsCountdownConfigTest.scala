@@ -16,13 +16,13 @@ class AsCountdownConfigTest extends BaseSpec {
 
       val Some(soln @ Offspring(result, gen, id, mom, dad)) = cfg.solve
 
-      //      assertions(soln)
+      assertions(soln)
 
-      gen shouldBe 4
-      id shouldBe 195
-      result shouldBe Equation.parse("3 * 7 - 6")
-      mom.value shouldBe Equation.parse("3 * 7 - 7 / 14 - 3 - 12")
-      dad.value shouldBe Equation.parse("7 * 7 / 6")
+      gen shouldBe 2
+      id shouldBe 194
+      result shouldBe Equation.parse("12 - 3 + 6")
+      mom.value shouldBe Equation.parse("12 - 6 / 12 - 14 / 7 - 3")
+      dad.value shouldBe Equation.parse("7 / 3 + 6")
     }
 
     "solve random equations" in {
@@ -37,13 +37,14 @@ class AsCountdownConfigTest extends BaseSpec {
         val Some(soln @ Offspring(result, gen, id, mom, dad)) =
           config(seed).solve
 
-        //        assertions(soln)
+        assertions(soln)
 
         gen shouldBe 0
-        id shouldBe 120
+        id shouldBe 168
         result shouldBe Equation.parse("8 - 6 + 5")
-        mom.value shouldBe Equation.parse("8 - 6 - 5 - 3")
+        mom.value shouldBe Equation.parse("8 - 5 - 6 - 3")
         dad.value shouldBe Equation.parse("8 * 6 + 5")
+
       }
 
       withClue(
@@ -52,7 +53,7 @@ class AsCountdownConfigTest extends BaseSpec {
         val Some(soln @ Offspring(result, gen, id, mom, dad)) =
           config(seed).solve
 
-        //        assertions(soln)
+        assertions(soln)
 
         gen shouldBe 0
         id shouldBe 190
@@ -71,7 +72,8 @@ class AsCountdownConfigTest extends BaseSpec {
     */
   private def assertions(soln: Offspring[Equation]) = {
     val Offspring(result, gen, id, mom, dad) = soln
-    println(s"""
+//    println(
+    (s"""
          |gen shouldBe $gen
          |id shouldBe $id
          |result shouldBe Equation.parse("${result.expressionString}")

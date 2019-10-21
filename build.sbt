@@ -1,5 +1,5 @@
 import java.nio.file.Path
-
+import org.scoverage.coveralls.Imports.CoverallsKeys._
 import sbt.KeyRanks
 import sbt.Keys.{libraryDependencies, publishMavenStyle}
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
@@ -75,6 +75,8 @@ val commonSettings: Seq[Def.Setting[_]] = Seq(
   // see http://www.scalatest.org/user_guide/using_scalatest_with_sbt
   //(testOptions in Test) += (Tests.Argument(TestFrameworks.ScalaTest, "-h", s"target/scalatest-reports-${name.value}", "-oN"))
 )
+coverallsTokenFile := Option(
+  (sbt.io.Path.userHome / ".sbt" / ".coveralls.countdown").asPath.toString)
 
 val gaProject = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
@@ -90,7 +92,8 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
   .jvmSettings(
     libraryDependencies ++= List(
       "com.typesafe" % "config" % "1.3.4",
-      "com.github.aaronp" %% "args4c" % "0.7.0"
+      "com.github.aaronp" %% "args4c" % "0.7.0",
+      "com.github.aaronp" %% "eie" % "0.0.5"
     ))
   .settings(
     libraryDependencies ++= List(

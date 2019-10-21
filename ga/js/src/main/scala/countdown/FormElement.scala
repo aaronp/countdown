@@ -3,12 +3,14 @@ package countdown
 import ga.AlgoSettings
 import scalatags.JsDom.all.{value, _}
 
+import scala.collection.mutable.ListBuffer
 import scala.util.{Failure, Success, Try}
 
-final case class FormElement[A](field: String,
-                                initialValue: String,
-                                hint: String,
-                                validate: String => Either[String, A]) {
+final case class FormElement[A] private (
+    field: String,
+    initialValue: String,
+    hint: String,
+    validate: String => Either[String, A]) {
   val fieldId = field.filter(_.isLetterOrDigit).toLowerCase
 
   val inputElement = input(`type` := "text",
@@ -17,12 +19,16 @@ final case class FormElement[A](field: String,
                            value := initialValue).render
 
   inputElement.onkeyup = _ => {
+    validateCurrentValue()
+  }
+  def validateCurrentValue() = {
     validate(textValue) match {
       case Left(msg) => validationSpan.innerHTML = msg
       case Right(_)  => validationSpan.innerHTML = ""
     }
   }
-  private val validationSpan = span("validation goes here").render
+
+  private val validationSpan = span(style := "color:orange !important").render
   val liElement = li(
     label(`for` := fieldId)(field),
     inputElement,
@@ -30,7 +36,8 @@ final case class FormElement[A](field: String,
     validationSpan,
   )
 
-  def currentValue(): Option[A] = validate(textValue).toOption
+  def currentValue(): Option[A] = currentValueEither().toOption
+  def currentValueEither(): Either[String, A] = validate(textValue)
 
   private def textValue = inputElement.value
 }
@@ -39,6 +46,16 @@ object FormElement {
 
   private def valueAsNumbers(textValue: String): Try[Set[Int]] = {
     Try(textValue.split(",").flatMap(_.split(" ")).map(_.toInt).toSet)
+  }
+
+  private val formElements = ListBuffer[FormElement[_]]()
+  private def newFormElement[A](field: String,
+                                initialValue: String,
+                                hint: String,
+                                validate: String => Either[String, A]) = {
+    val elm = new FormElement[A](field, initialValue, hint, validate)
+    formElements += elm
+    elm
   }
 
   def int(field: String,
@@ -52,7 +69,7 @@ object FormElement {
       case Success(a)                         => Left(s"$a should be between ${min} and $max")
     }
 
-    new FormElement(field, initialValue, hint, asInt)
+    newFormElement(field, initialValue, hint, asInt)
   }
 
   def double(field: String,
@@ -66,7 +83,7 @@ object FormElement {
       case Success(a)                         => Left(s"$a should be between ${min} and $max")
     }
 
-    new FormElement(field, initialValue, hint, asInt)
+    newFormElement(field, initialValue, hint, asInt)
   }
 
   def optLong(field: String,
@@ -78,7 +95,7 @@ object FormElement {
       case Success(a)                       => Right(Option(a))
     }
 
-    new FormElement(field, initialValue, hint, asInt)
+    newFormElement(field, initialValue, hint, asInt)
   }
 
   def ints(field: String, initialValue: String, hint: String) = {
@@ -88,10 +105,12 @@ object FormElement {
       case Success(a) => Right(a)
     }
 
-    new FormElement[Set[Int]](field, initialValue, hint, asInt)
+    newFormElement[Set[Int]](field, initialValue, hint, asInt)
   }
 
   object configListItems {
+
+    def elements: List[FormElement[_]] = formElements.toList
 
     val targetNr =
       FormElement.int("Target Number", "12", "The number we're trying to find")
@@ -106,7 +125,9 @@ object FormElement {
     val maxGen = FormElement.int(
       "Max Generations",
       "200",
-      "How many generations to allow before we quit without an answer")
+      "How many generations to allow before we quit without an answer",
+      2,
+      1000)
     val populationSize = FormElement.int(
       "Population Size",
       "100",
@@ -119,10 +140,28 @@ object FormElement {
       0.0,
       1.0)
 
-    val minEquationSize = FormElement.int(
-      "Minimum Equation Size",
-      "1",
-      "The smallest equation length to use in the initial population")
+    val minEquationSize = {
+      val base = FormElement.int(
+        "Minimum Equation Size",
+        "1",
+        "The smallest equation length to use in the initial population")
+      def checkInputs(str: String) = {
+        base.validate(str) match {
+          case right @ Right(size) =>
+            val maxOpt = inputNumbers.currentValue().map(_.size)
+            val minSizeLessThanAvailNrs = maxOpt.exists(_ >= size)
+            if (minSizeLessThanAvailNrs) {
+              right
+            } else {
+              Left(
+                s"The minimum equation size needs to be fewer than the number of available unique inputs (e.g. ${maxOpt
+                  .getOrElse(0)})")
+            }
+          case left => left
+        }
+      }
+      base.copy(validate = checkInputs)
+    }
 
     val maxNodes =
       FormElement.int("Solution Node Limit",
@@ -150,8 +189,6 @@ object FormElement {
         )
         (seed, settings)
       }
-
-      //.getOrElse(System.currentTimeMillis)
     }
   }
 
