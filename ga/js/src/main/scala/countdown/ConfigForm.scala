@@ -36,7 +36,10 @@ object ConfigForm {
       makeLi("Using Input Numbers",
              "3 4 6 1",
              "The numbers available to reach the target numbrer")
-    val (seedLi, seed) = makeLi("Seed", "", "Our random number seed - optional")
+    val (seedLi, seed) = makeLi(
+      "Random Value Seed",
+      "",
+      "An optional value with which to initialise our random value generator")
     val (maxGenLi, maxGen) = makeLi(
       "Max Generations",
       "200",
@@ -120,6 +123,9 @@ object ConfigForm {
       )
 
       window.console.info(s"CountdownConfig is $countdownCfg")
+
+      // ensure we stamp our 'seed' value for future computations
+      seed.value = rnd.long.toString
 
       onSolve(countdownCfg, maxNodes.value.toInt)
     }

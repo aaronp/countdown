@@ -61,7 +61,7 @@ object CountdownPage {
 
     val canvas = canvasById(resultCanvasId)
 
-    def windowHeight = (0.6 * window.innerHeight).toInt
+    def windowHeight = (0.8 * window.innerHeight).toInt
 
     canvas.width = window.innerWidth.toInt
     canvas.height = windowHeight

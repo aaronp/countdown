@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <script src="jquery.min.js"></script>
+        <script src="springy.js"></script>
+        <script src="springyui.js"></script>
+        <script src="countdown.js"></script>
+        <script src="gaproject-fastopt.js"></script>
+        <link type="text/css" rel="stylesheet" href="ga.css"/>
+    </head>
+    <!--
+
+    <script>
+    var graph = new Springy.Graph();
+    </script>
+    -->
+
+    <body onload="CountdownPage.render('config', 'results', 'computeContainerId', 'layout')">
+
+        <div id="config"></div>
+        <div id="results"></div>
+
+        <div>
+            <canvas id="layout" width="1280" height="960"/>
+        </div>
+        <div id="computeContainerId"></div>
+    </body>
+</html>
