@@ -2,8 +2,9 @@ package countdown
 
 import ga.GeneticAlgo.Generation
 import ga.{Geneology, HtmlRenderer, Node}
-import org.scalajs.dom.html.{Canvas, Div}
-import org.scalajs.dom.{document, window}
+import org.scalajs.dom.html.Div
+import org.scalajs.dom.raw.HTMLTextAreaElement
+import org.scalajs.dom.window
 import scalatags.JsDom.all._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,39 +20,34 @@ object CountdownPage {
              scriptContainerId: String,
              resultCanvasId: String) = {
 
-    val computeContainer = divById(computeContainerId)
+    val computeContainer = HtmlUtils.divById(computeContainerId)
     computeContainer.innerHTML = ""
+    val logContainer =
+      textarea(`class` := "logs", cols := 200, rows := 1000).render
+    computeContainer.appendChild(logContainer)
+    window.console.log(s"Appending textarea to $computeContainerId")
 
-    def logGen(generation: Generation[Equation]) = {
+    // a function we pass in to log progress
+    def logGeneration(generation: Generation[Equation]) = {
       val (gen, population) = generation
-      window.console.info(s"Generation $gen:\n")
-      population.foreach { gene =>
-        val geneString = gene.toString
-        window.console.info(geneString)
-        computeContainer.appendChild(p(geneString).render)
-      }
-      window.console.info("-" * 80)
+      val sep = "-" * 120
+      val heading = s"Generation $gen:\n$sep\n"
+
+      val content = population.mkString(s"$heading", "\n", "\n")
+      window.console.info(content)
+
+      logContainer.value += content
     }
 
-    val scriptContainer = divById(scriptContainerId)
+    val scriptContainer = HtmlUtils.divById(scriptContainerId)
     val form = ConfigForm(
-      logGen,
+      logGeneration,
       onSolve(scriptContainer, computeContainerId, resultCanvasId))
 
-    val container = divById(configId)
+    val container = HtmlUtils.divById(configId)
     container.innerHTML = ""
     container.appendChild(form.render)
   }
-
-  def divById(id: String): Div = elmById(id) match {
-    case div: Div => div
-  }
-
-  def canvasById(id: String): Canvas = elmById(id) match {
-    case c: Canvas => c
-  }
-
-  def elmById(id: String) = document.getElementById(id)
 
   private def renderSolution(scriptContainer: Div,
                              resultCanvasId: String,
@@ -59,8 +55,9 @@ object CountdownPage {
                              solutionOpt: Option[Geneology[Equation]],
                              maxNodes: Int): Unit = {
 
-    val canvas = canvasById(resultCanvasId)
+    val canvas = HtmlUtils.canvasById(resultCanvasId)
 
+    // let's render the height as less than the full window height
     def windowHeight = (0.8 * window.innerHeight).toInt
 
     canvas.width = window.innerWidth.toInt
@@ -115,6 +112,23 @@ object CountdownPage {
     TransitionEvent.doJumpToSolutionFrame()
   }
 
+  private def clearResults(scriptContainer: Div,
+                           computeContainerId: String,
+                           resultCanvasId: String) = {
+    scriptContainer.innerHTML = ""
+
+    val workingsOutTextArea = HtmlUtils
+      .childrenFor(HtmlUtils.divById(computeContainerId))
+      .collect {
+        case ta: HTMLTextAreaElement => ta
+      }
+    workingsOutTextArea.foreach(_.value = "")
+
+    val canvas = HtmlUtils.canvasById(resultCanvasId)
+    val context = canvas.getContext("2d")
+    context.clearRect(0, 0, canvas.width * 2, canvas.height * 2)
+  }
+
   /**
     * Our 'onSolve' callback - instruct the UI to move to the 'compute' frame, then start computing...
     *
@@ -129,8 +143,7 @@ object CountdownPage {
               resultCanvasId: String)(cfg: CountdownConfig, maxNodes: Int) = {
 
     // clear previous results
-    scriptContainer.innerHTML = ""
-    divById(computeContainerId).innerHTML = ""
+    clearResults(scriptContainer, computeContainerId, resultCanvasId)
 
     TransitionEvent.registerListener {
       case event: TransitionEnd if event.isComputeTarget =>

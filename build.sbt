@@ -167,7 +167,7 @@ makePage := {
     (baseDirectory.value / "ga" / "shared" / "src" / "main" / "resources").toPath
 
   val sharedJsLibs =
-    List("springy.js", "springyui.js", "jquery.min.js")
+    List("springy.js", "springyui.js", "jquery.min.js", "springy.LICENSE")
       .map(f => sharedResourceDir.resolve(f))
 
   // always copy/clobber these
