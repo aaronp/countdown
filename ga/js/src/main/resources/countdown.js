@@ -18,7 +18,10 @@ function jumpToComputeFrame() {
 function jumpToSolutionFrame() {
   mySwipe.slide(3, slideSpeed);
 }
-
+function clearGraph() {
+      springy.graph.nodes = [];
+      springy.graph.edges = [];
+}
 function init(id) {
   window.mySwipe = new Swipe(document.getElementById(id), {
       startSlide: 0,

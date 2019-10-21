@@ -7,8 +7,6 @@ import org.scalajs.dom.window
 import scalatags.JsDom
 import scalatags.JsDom.all.{`class`, _}
 
-import scala.collection.immutable
-
 /**
   * Rendering of our configuration form
   */

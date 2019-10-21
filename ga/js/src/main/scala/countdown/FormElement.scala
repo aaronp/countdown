@@ -127,7 +127,7 @@ object FormElement {
       "200",
       "How many generations to allow before we quit without an answer",
       2,
-      1000)
+      5000)
     val populationSize = FormElement.int(
       "Population Size",
       "200",

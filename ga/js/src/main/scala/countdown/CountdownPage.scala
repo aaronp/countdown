@@ -7,8 +7,11 @@ import org.scalajs.dom.raw.HTMLTextAreaElement
 import org.scalajs.dom.window
 import scalatags.JsDom.all._
 
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+import scala.util.Try
 
 /**
   *
@@ -27,6 +30,8 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 @JSExportTopLevel("CountdownPage")
 object CountdownPage {
 
+  private var logContent = ListBuffer[String]()
+
   @JSExport
   def render(configId: String,
              computeContainerId: String,
@@ -39,7 +44,6 @@ object CountdownPage {
       textarea(`class` := "logs", cols := 200, rows := 400).render
     computeContainer.appendChild(logContainer)
 
-    var logContent = ListBuffer[String]()
     // a function we pass in to log progress
     def logGeneration(generation: Generation[Equation]) = {
       val (gen, population) = generation
@@ -48,8 +52,10 @@ object CountdownPage {
 
       val content = population.mkString(header, "\n", "")
       window.console.info(content)
+      logContent += content
 
-      logContainer.value += content
+//      logContainer.value += content
+      logContainer.value = logContent.mkString("\n")
     }
 
     val scriptContainer = HtmlUtils.divById(scriptContainerId)
@@ -90,12 +96,17 @@ object CountdownPage {
                            resultCanvasId: String) = {
     scriptContainer.innerHTML = ""
 
+    logContent.clear()
+
     val workingsOutTextArea = HtmlUtils
       .childrenFor(HtmlUtils.divById(computeContainerId))
       .collect {
         case ta: HTMLTextAreaElement => ta
       }
     workingsOutTextArea.foreach(_.value = "")
+
+    // defined in countdown.js
+    Try(js.Dynamic.global.clearGraph())
 
     val canvas = HtmlUtils.canvasById(resultCanvasId)
     val context = canvas.getContext("2d")
