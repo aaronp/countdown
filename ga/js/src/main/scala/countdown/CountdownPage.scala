@@ -10,7 +10,20 @@ import scalatags.JsDom.all._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
-// thanks 'https://www.sanwebe.com/2014/08/css-html-forms-designs'
+/**
+  *
+  * Contains some functions for creating a [[CountdownConfig]] from an HTML form, as well as a means
+  * to display the compute/solution pages
+  *
+  * A big thanks to:
+  * {{{
+  * http://getspringy.com/
+  * https://www.sanwebe.com/2014/08/css-html-forms-designs
+  * https://www.scala-js.org/
+  * https://swipe.js.org/
+  * https://typelevel.org/cats/
+  * }}}
+  */
 @JSExportTopLevel("CountdownPage")
 object CountdownPage {
 
