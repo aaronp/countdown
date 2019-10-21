@@ -1,27 +1,42 @@
 <html>
-    <head>
-        <script src="jquery.min.js"></script>
-        <script src="springy.js"></script>
-        <script src="springyui.js"></script>
-        <script src="countdown.js"></script>
-        <script src="gaproject-fastopt.js"></script>
-        <link type="text/css" rel="stylesheet" href="ga.css"/>
-    </head>
-    <!--
+<head>
+    <script src="jquery.min.js"></script>
+    <script src="springy.js"></script>
+    <script src="springyui.js"></script>
+    <script src="countdown.js"></script>
+    <script src="gaproject-fastopt.js"></script>
+    <script src="swipe.js"></script>
 
+    <link type="text/css" rel="stylesheet" href="swipe.css"/>
+    <link type="text/css" rel="stylesheet" href="ga.css"/>
     <script>
-    var graph = new Springy.Graph();
+
     </script>
-    -->
+</head>
+<body onload="init('slider')">
+<div style="height:120px">
+    <button onclick="jumpToBeginning()">Configure</button>
+    <button onclick="jumpToComputeFrame()">Workings Out</button>
+    <button onclick="jumpToSolutionFrame()">Solution</button>
+</div>
 
-    <body onload="CountdownPage.render('config', 'results', 'computeContainerId', 'layout')">
-
-        <div id="config"></div>
-        <div id="results"></div>
-
-        <div>
-            <canvas id="layout" width="1280" height="960"/>
+<div id='slider' class='swipe'>
+    <div class='swipe-wrap'>
+        <div id="config">
+            <span class="dot">1</span>
         </div>
-        <div id="computeContainerId"></div>
-    </body>
+        <div id="compute" class="compute" style="overflow-y:visible;">
+
+        </div>
+        <div id="results">
+            <div id="scriptContainer">
+            </div>
+            <div>
+                <canvas id="layout" width="480" height="460"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
 </html>
