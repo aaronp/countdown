@@ -48,6 +48,10 @@ object TransitionEvent {
 
   @JSExport
   def onTransitionStart(index: Int, element: Div): Unit = {
+    // always scroll back to top
+    window.document.body.scrollTop = 0
+    window.document.documentElement.scrollTop = 0
+
     window.console.info(s"onTransitionStart($index, $element)")
     onTransition(TransitionStart(index, element))
   }

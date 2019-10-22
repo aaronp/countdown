@@ -32,8 +32,6 @@ object CountdownPage {
 
   private var logContent = ListBuffer[String]()
 
-  private var lastUpdateTime = 0L
-
   @JSExport
   def render(configId: String,
              computeContainerId: String,
@@ -55,23 +53,10 @@ object CountdownPage {
       val header = s"\n$sep\nGeneration $gen:\n"
 
       val content = population.mkString(header, "\n", "")
-      //      window.console.info(content)
       logContent += content
-
-      updateLogs(content)
-    }
-
-    def updateLogs(next: String) = {
-      val now = System.currentTimeMillis()
-      if (now > lastUpdateTime + 2000) {
-        lastUpdateTime = now
-        logContainer.value = logContent.mkString("\n")
-        //      computeContainer.appendChild(span(next).render)
-        logContainer.scrollTop = logContainer.scrollHeight
-      } else {
-
-        window.console.info("skipping update...")
-      }
+      window.console.info(content)
+      logContainer.value = logContent.mkString("\n")
+      logContainer.scrollTop = logContainer.scrollHeight
     }
 
     val scriptContainer = HtmlUtils.divById(scriptContainerId)
