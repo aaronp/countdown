@@ -18,7 +18,7 @@ case class Offspring[A: Show](override val value: A,
                               dad: Geneology[A])
     extends Geneology[A] {
   override def toString: String =
-    s"child $generation@$offspringNr: ${value.show}"
+    s"Gen $generation@$offspringNr: ${value.show}"
 }
 case class Mutation[A: Show](override val value: A, original: Offspring[A])
     extends Geneology[A] {
