@@ -157,7 +157,7 @@ lazy val makePage =
 makePage := {
   import eie.io._
   val jsArtifacts = {
-    val path: Path = (fastOptJS in (gaProjectJS, Compile)).value.data.asPath
+    val path: Path = (fullOptJS in (gaProjectJS, Compile)).value.data.asPath
     val dependencyFiles =
       path.getParent.find(_.fileName.endsWith("-jsdeps.js")).toList
     path :: dependencyFiles
