@@ -2001,6 +2001,9 @@ function $h_Lcountdown_ConfigForm$() {
   /*<skip>*/
 }
 $h_Lcountdown_ConfigForm$.prototype = $c_Lcountdown_ConfigForm$.prototype;
+$c_Lcountdown_ConfigForm$.prototype.init___ = (function() {
+  return this
+});
 $c_Lcountdown_ConfigForm$.prototype.countdown$ConfigForm$$$anonfun$apply$1__Lorg_scalajs_dom_raw_MouseEvent__F1__F2__O = (function(e, logGeneration$1, onSolve$1) {
   e.preventDefault();
   e.stopPropagation();
@@ -2199,9 +2202,6 @@ $c_Lcountdown_ConfigForm$.prototype.countdown$ConfigForm$$$anonfun$apply$1__Lorg
     return (void 0)
   }
 });
-$c_Lcountdown_ConfigForm$.prototype.init___ = (function() {
-  return this
-});
 $c_Lcountdown_ConfigForm$.prototype.apply__F1__F2__Lscalatags_JsDom$TypedTag = (function(logGeneration, onSolve) {
   var this$1 = $m_Lscalatags_JsDom$all$();
   var jsx$1 = this$1.input__Lscalatags_JsDom$TypedTag();
@@ -2274,7 +2274,8 @@ $c_Lcountdown_CountdownConfig$implicits$.prototype.$classData = $d_Lcountdown_Co
 /** @constructor */
 function $c_Lcountdown_CountdownPage$() {
   $c_O.call(this);
-  this.logContent$1 = null
+  this.logContent$1 = null;
+  this.lastUpdateTime$1 = $m_sjsr_RuntimeLong$().Zero__sjsr_RuntimeLong()
 }
 $c_Lcountdown_CountdownPage$.prototype = new $h_O();
 $c_Lcountdown_CountdownPage$.prototype.constructor = $c_Lcountdown_CountdownPage$;
@@ -2286,21 +2287,18 @@ $h_Lcountdown_CountdownPage$.prototype = $c_Lcountdown_CountdownPage$.prototype;
 $c_Lcountdown_CountdownPage$.prototype.init___ = (function() {
   $n_Lcountdown_CountdownPage$ = this;
   this.logContent$1 = $as_scm_ListBuffer($m_scm_ListBuffer$().apply__sc_Seq__sc_GenTraversable($m_sci_Nil$()));
+  this.lastUpdateTime$1 = $m_sjsr_RuntimeLong$().Zero__sjsr_RuntimeLong();
   return this
 });
-$c_Lcountdown_CountdownPage$.prototype.onSolve__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__Lcountdown_CountdownConfig__I__sjs_js_Dynamic = (function(scriptContainer, computeContainerId, resultCanvasId, cfg, maxNodes) {
-  this.clearResults__p1__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__sjs_js_Dynamic(scriptContainer, computeContainerId, resultCanvasId);
-  $m_Lcountdown_TransitionEvent$().registerListener__s_PartialFunction__s_PartialFunction(new $c_Lcountdown_CountdownPage$$anonfun$onSolve$1().init___Lorg_scalajs_dom_raw_HTMLDivElement__T__Lcountdown_CountdownConfig__I(scriptContainer, resultCanvasId, cfg, maxNodes));
-  return $m_Lcountdown_TransitionEvent$().doJumpToComputeFrame__sjs_js_Dynamic()
-});
 $c_Lcountdown_CountdownPage$.prototype.clearResults__p1__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__sjs_js_Dynamic = (function(scriptContainer, computeContainerId, resultCanvasId) {
+  $m_Lorg_scalajs_dom_package$().window__Lorg_scalajs_dom_raw_Window().console.log("Clearing results");
   scriptContainer.innerHTML = "";
   this.logContent$1.clear__V();
-  var this$2 = $m_Lcountdown_HtmlUtils$().childrenFor__Lorg_scalajs_dom_raw_HTMLElement__sci_IndexedSeq($m_Lcountdown_HtmlUtils$().divById__T__Lorg_scalajs_dom_raw_HTMLDivElement(computeContainerId));
+  var this$3 = $m_Lcountdown_HtmlUtils$().childrenFor__Lorg_scalajs_dom_raw_HTMLElement__sci_IndexedSeq($m_Lcountdown_HtmlUtils$().divById__T__Lorg_scalajs_dom_raw_HTMLDivElement(computeContainerId));
   var pf = new $c_Lcountdown_CountdownPage$$anonfun$1().init___();
   $m_sci_IndexedSeq$();
   var bf = $m_sc_IndexedSeq$().ReusableCBF$6;
-  var workingsOutTextArea = $as_sci_IndexedSeq($f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this$2, pf, bf));
+  var workingsOutTextArea = $as_sci_IndexedSeq($f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this$3, pf, bf));
   workingsOutTextArea.foreach__F1__V(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
     return (function(x$2$2) {
       x$2$2.value = ""
@@ -2345,6 +2343,11 @@ $c_Lcountdown_CountdownPage$.prototype.render__T__T__T__T__Lorg_scalajs_dom_raw_
   var jsx$1 = this$1.textarea__Lscalatags_JsDom$TypedTag();
   var array = [$m_Lscalatags_JsDom$all$().$class__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair("logs", $m_Lscalatags_JsDom$all$().stringAttr$1), $m_Lscalatags_JsDom$all$().cols__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair(200, $m_Lscalatags_JsDom$all$().intAttr$1), $m_Lscalatags_JsDom$all$().rows__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair(400, $m_Lscalatags_JsDom$all$().intAttr$1)];
   var logContainer = jsx$1.apply__sc_Seq__Lscalatags_JsDom$TypedTag(new $c_sjs_js_WrappedArray().init___sjs_js_Array(array)).render__Lorg_scalajs_dom_raw_Element();
+  var this$4 = $m_Lscalatags_JsDom$all$();
+  var jsx$2 = this$4.p__Lscalatags_JsDom$TypedTag();
+  var array$1 = [($m_Lscalatags_JsDom$all$(), new $c_Lscalatags_JsDom$StringFrag().init___T("Calculating "))];
+  var calculatingMsg = jsx$2.apply__sc_Seq__Lscalatags_JsDom$TypedTag(new $c_sjs_js_WrappedArray().init___sjs_js_Array(array$1)).render__Lorg_scalajs_dom_raw_Element();
+  computeContainer.appendChild(calculatingMsg);
   computeContainer.appendChild(logContainer);
   var scriptContainer = $m_Lcountdown_HtmlUtils$().divById__T__Lorg_scalajs_dom_raw_HTMLDivElement(scriptContainerId);
   var form = $m_Lcountdown_ConfigForm$().apply__F1__F2__Lscalatags_JsDom$TypedTag(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, logContainer$1) {
@@ -2352,16 +2355,44 @@ $c_Lcountdown_CountdownPage$.prototype.render__T__T__T__T__Lorg_scalajs_dom_raw_
       var generation = $as_T2(generation$2);
       $this.logGeneration$1__p1__T2__Lorg_scalajs_dom_raw_HTMLTextAreaElement__V(generation, logContainer$1)
     })
-  })(this, logContainer)), new $c_sjsr_AnonFunction2().init___sjs_js_Function2((function(this$2$1, scriptContainer$1, computeContainerId$1, resultCanvasId$1) {
+  })(this, logContainer)), new $c_sjsr_AnonFunction2().init___sjs_js_Function2((function(this$2$1, scriptContainer$1, computeContainerId$1, resultCanvasId$1, calculatingMsg$1) {
     return (function(cfg$2, maxNodes$2) {
       var cfg = $as_Lcountdown_CountdownConfig(cfg$2);
       var maxNodes = $uI(maxNodes$2);
-      $m_Lcountdown_CountdownPage$().onSolve__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__Lcountdown_CountdownConfig__I__sjs_js_Dynamic(scriptContainer$1, computeContainerId$1, resultCanvasId$1, cfg, maxNodes)
+      $m_Lcountdown_CountdownPage$().onSolve__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__Lorg_scalajs_dom_raw_HTMLParagraphElement__Lcountdown_CountdownConfig__I__sjs_js_Dynamic(scriptContainer$1, computeContainerId$1, resultCanvasId$1, calculatingMsg$1, cfg, maxNodes)
     })
-  })(this, scriptContainer, computeContainerId, resultCanvasId)));
+  })(this, scriptContainer, computeContainerId, resultCanvasId, calculatingMsg)));
   var container = $m_Lcountdown_HtmlUtils$().divById__T__Lorg_scalajs_dom_raw_HTMLDivElement(configId);
   container.innerHTML = "";
   return container.appendChild(form.render__Lorg_scalajs_dom_raw_Element())
+});
+$c_Lcountdown_CountdownPage$.prototype.updateLogs$1__p1__T__Lorg_scalajs_dom_raw_HTMLTextAreaElement__V = (function(next, logContainer$1) {
+  var t = $m_jl_System$().currentTimeMillis__J();
+  var lo = t.lo$2;
+  var hi = t.hi$2;
+  var b = this.lastUpdateTime$1;
+  var bhi = b.hi$2;
+  var lo$1 = ((2000 + b.lo$2) | 0);
+  var hi$1 = ((((-2147483648) ^ lo$1) < (-2147481648)) ? ((1 + bhi) | 0) : bhi);
+  if (((hi === hi$1) ? (((-2147483648) ^ lo) > ((-2147483648) ^ lo$1)) : (hi > hi$1))) {
+    this.lastUpdateTime$1 = new $c_sjsr_RuntimeLong().init___I__I(lo, hi);
+    var this$2 = this.logContent$1;
+    var this$3 = this$2.scala$collection$mutable$ListBuffer$$start$6;
+    logContainer$1.value = $f_sc_TraversableOnce__mkString__T__T__T__T(this$3, "", "\n", "");
+    logContainer$1.scrollTop = $uI(logContainer$1.scrollHeight)
+  } else {
+    $m_Lorg_scalajs_dom_package$().window__Lorg_scalajs_dom_raw_Window().console.info("skipping update...")
+  }
+});
+$c_Lcountdown_CountdownPage$.prototype.onSolve__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__Lorg_scalajs_dom_raw_HTMLParagraphElement__Lcountdown_CountdownConfig__I__sjs_js_Dynamic = (function(scriptContainer, computeContainerId, resultCanvasId, calculatingMsg, cfg, maxNodes) {
+  this.clearResults__p1__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__sjs_js_Dynamic(scriptContainer, computeContainerId, resultCanvasId);
+  var jsx$1 = cfg.targetValue$1;
+  var this$1 = cfg.inputValues$1;
+  var this$2 = $f_sc_SetLike__toSeq__sc_Seq(this$1);
+  var ord = $m_s_math_Ordering$Int$();
+  calculatingMsg.innerHTML = (((("Calculating " + jsx$1) + " from ") + $as_sc_TraversableOnce($f_sc_SeqLike__sorted__s_math_Ordering__O(this$2, ord)).mkString__T__T(" ")) + " ...");
+  $m_Lcountdown_TransitionEvent$().registerListener__s_PartialFunction__s_PartialFunction(new $c_Lcountdown_CountdownPage$$anonfun$onSolve$1().init___Lorg_scalajs_dom_raw_HTMLDivElement__T__Lcountdown_CountdownConfig__I(scriptContainer, resultCanvasId, cfg, maxNodes));
+  return $m_Lcountdown_TransitionEvent$().doJumpToComputeFrame__sjs_js_Dynamic()
 });
 $c_Lcountdown_CountdownPage$.prototype.$$js$exported$meth$render__T__T__T__T__O = (function(configId, computeContainerId, scriptContainerId, resultCanvasId) {
   return this.render__T__T__T__T__Lorg_scalajs_dom_raw_Node(configId, computeContainerId, scriptContainerId, resultCanvasId)
@@ -2376,11 +2407,8 @@ $c_Lcountdown_CountdownPage$.prototype.logGeneration$1__p1__T2__Lorg_scalajs_dom
   var sep = $f_sci_StringLike__$$times__I__T(this$2, 120);
   var header = (((("\n" + sep) + "\nGeneration ") + gen) + ":\n");
   var content = $f_sc_TraversableOnce__mkString__T__T__T__T(population, header, "\n", "");
-  $m_Lorg_scalajs_dom_package$().window__Lorg_scalajs_dom_raw_Window().console.info(content);
   this.logContent$1.$$plus$eq__O__scm_ListBuffer(content);
-  var this$4 = this.logContent$1;
-  var this$5 = this$4.scala$collection$mutable$ListBuffer$$start$6;
-  logContainer$1.value = $f_sc_TraversableOnce__mkString__T__T__T__T(this$5, "", "\n", "")
+  this.updateLogs$1__p1__T__Lorg_scalajs_dom_raw_HTMLTextAreaElement__V(content, logContainer$1)
 });
 $c_Lcountdown_CountdownPage$.prototype.render = (function(arg$1, arg$2, arg$3, arg$4) {
   var prep0 = $as_T(arg$1);
@@ -2500,13 +2528,13 @@ function $h_Lcountdown_FormElement$configListItems$() {
 $h_Lcountdown_FormElement$configListItems$.prototype = $c_Lcountdown_FormElement$configListItems$.prototype;
 $c_Lcountdown_FormElement$configListItems$.prototype.init___ = (function() {
   $n_Lcountdown_FormElement$configListItems$ = this;
-  this.targetNr$1 = $m_Lcountdown_FormElement$().$int__T__T__T__I__I__Lcountdown_FormElement("Target Number", "12", "The number we're trying to find", ($m_Lcountdown_FormElement$(), 0), ($m_Lcountdown_FormElement$(), 500));
-  this.inputNumbers$1 = $m_Lcountdown_FormElement$().ints__T__T__T__Lcountdown_FormElement("Using Input Numbers", "3 4 6 1", "The numbers available to reach the target number");
+  this.targetNr$1 = $m_Lcountdown_FormElement$().$int__T__T__T__I__I__Lcountdown_FormElement("Target Number", "378", "The number we're trying to find", 0, 1000000000);
+  this.inputNumbers$1 = $m_Lcountdown_FormElement$().ints__T__T__T__Lcountdown_FormElement("Using Input Numbers", "25 3 8 12 9 15", "The numbers available to reach the target number");
   this.seed$1 = $m_Lcountdown_FormElement$().optLong__T__T__T__Lcountdown_FormElement("Random Value Seed", "", "An optional value with which to initialise our random value generator");
-  this.maxGen$1 = $m_Lcountdown_FormElement$().$int__T__T__T__I__I__Lcountdown_FormElement("Max Generations", "200", "How many generations to allow before we quit without an answer", 2, 5000);
+  this.maxGen$1 = $m_Lcountdown_FormElement$().$int__T__T__T__I__I__Lcountdown_FormElement("Max Generations", "60", "How many generations to allow before we quit without an answer", 2, 5000);
   this.populationSize$1 = $m_Lcountdown_FormElement$().$int__T__T__T__I__I__Lcountdown_FormElement("Population Size", "200", "How large we should allow the population to grow", ($m_Lcountdown_FormElement$(), 0), ($m_Lcountdown_FormElement$(), 500));
   this.mutationProbability$1 = $m_Lcountdown_FormElement$().$double__T__T__T__D__D__Lcountdown_FormElement("Mutation Probability", "0.01", "A number between 0.0 and 1.0 representing the probability of a mutation", 0.0, 1.0);
-  var base = $m_Lcountdown_FormElement$().$int__T__T__T__I__I__Lcountdown_FormElement("Minimum Equation Size", "1", "The smallest equation length to use in the initial population", ($m_Lcountdown_FormElement$(), 0), ($m_Lcountdown_FormElement$(), 500));
+  var base = $m_Lcountdown_FormElement$().$int__T__T__T__I__I__Lcountdown_FormElement("Minimum Equation Size", "3", "The smallest equation length to use in the initial population", ($m_Lcountdown_FormElement$(), 0), ($m_Lcountdown_FormElement$(), 500));
   var x$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, base$1) {
     return (function(str$2) {
       var str = $as_T(str$2);
@@ -2517,7 +2545,7 @@ $c_Lcountdown_FormElement$configListItems$.prototype.init___ = (function() {
   var x$3 = base.initialValue$1;
   var x$4 = base.hint$1;
   this.minEquationSize$1 = new $c_Lcountdown_FormElement().init___T__T__T__F1(x$2, x$3, x$4, x$1);
-  this.maxNodes$1 = $m_Lcountdown_FormElement$().$int__T__T__T__I__I__Lcountdown_FormElement("Solution Node Limit", "20", "The maximum number of nodes to render", 1, 50);
+  this.maxNodes$1 = $m_Lcountdown_FormElement$().$int__T__T__T__I__I__Lcountdown_FormElement("Max Solution Nodes to Display", "20", "The maximum number of nodes to show when displaying our solution graph", 1, 50);
   return this
 });
 $c_Lcountdown_FormElement$configListItems$.prototype.asSettings__s_Option = (function() {
@@ -2977,7 +3005,6 @@ $c_Lga_GeneticAlgo$.prototype.createNextGeneration__sc_IndexedSeq__Lga_Seed__I__
             };
             var mateSeed = $as_Lga_Seed(x1$2.$$und1__O());
             var partnerIndices = $as_sc_Seq(x1$2.$$und2__O());
-            $m_s_Predef$().require__Z__V((!partnerIndices.contains__O__Z(i)));
             $m_s_package$();
             $m_sci_IndexedSeq$();
             $m_sci_Vector$();
@@ -9849,13 +9876,6 @@ function $m_s_util_hashing_MurmurHash3$() {
   };
   return $n_s_util_hashing_MurmurHash3$
 }
-function $f_sc_Iterator__exists__F1__Z($thiz, p) {
-  var res = false;
-  while (((!res) && $thiz.hasNext__Z())) {
-    res = $uZ(p.apply__O__O($thiz.next__O()))
-  };
-  return res
-}
 function $f_sc_Iterator__isEmpty__Z($thiz) {
   return (!$thiz.hasNext__Z())
 }
@@ -11411,7 +11431,7 @@ $c_Lga_AlgoSettings$.prototype.init___ = (function() {
 $c_Lga_AlgoSettings$.prototype.inRange$1__p1__I__I__I__Z = (function(x, forIndex$1, populationSize$1) {
   return (((x !== forIndex$1) && (x >= 0)) && (x < populationSize$1))
 });
-$c_Lga_AlgoSettings$.prototype.safeDefault$1__p1__I__sc_Seq__I__D__I = (function(populationSize$1, offsets$1, forIndex$1, rnd$1) {
+$c_Lga_AlgoSettings$.prototype.safeDefault$1__p1__I__I__I = (function(populationSize$1, forIndex$1) {
   var this$4 = new $c_sci_Range$Inclusive().init___I__I__I(0, populationSize$1, 1);
   var this$5 = new $c_sc_IndexedSeqLike$Elements().init___sc_IndexedSeqLike__I__I(this$4, 0, this$4.length__I());
   inlinereturn$8: {
@@ -11425,10 +11445,7 @@ $c_Lga_AlgoSettings$.prototype.safeDefault$1__p1__I__sc_Seq__I__D__I = (function
     };
     var this$6 = $m_s_None$()
   };
-  if (this$6.isEmpty__Z()) {
-    $m_s_sys_package$().error__T__sr_Nothing$(((((((("Bug: Couldn't find a valid mate in " + offsets$1) + " for index ") + forIndex$1) + " of population size ") + populationSize$1) + " when given ") + rnd$1))
-  };
-  return $uI(this$6.get__O())
+  return $uI((this$6.isEmpty__Z() ? forIndex$1 : this$6.get__O()))
 });
 $c_Lga_AlgoSettings$.prototype.nextMateIndex__I__I__Lcats_data_IndexedStateT = (function(forIndex, populationSize) {
   var range = $m_Lga_Seed$().nextDouble$1.map__F1__Lcats_Functor__Lcats_data_IndexedStateT(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, forIndex$1, populationSize$1) {
@@ -11496,7 +11513,6 @@ $c_Lga_AlgoSettings$.prototype.nextMateIndex__I__I__Lcats_data_IndexedStateT = (
     return (function(x0$2$2) {
       var x0$2 = $as_T2(x0$2$2);
       if ((x0$2 !== null)) {
-        var rnd = $uD(x0$2.$$und1__O());
         var offsets = $as_sc_Seq(x0$2.$$und2__O());
         var this$24 = offsets.find__F1__s_Option(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$2, forIndex$1$4, populationSize$1$1) {
           return (function(x$2) {
@@ -11504,7 +11520,7 @@ $c_Lga_AlgoSettings$.prototype.nextMateIndex__I__I__Lcats_data_IndexedStateT = (
             return $this$2.inRange$1__p1__I__I__I__Z(x, forIndex$1$4, populationSize$1$1)
           })
         })(this$2$2, forIndex$2, populationSize$2)));
-        return $uI((this$24.isEmpty__Z() ? this$2$2.safeDefault$1__p1__I__sc_Seq__I__D__I(populationSize$2, offsets, forIndex$2, rnd) : this$24.get__O()))
+        return $uI((this$24.isEmpty__Z() ? this$2$2.safeDefault$1__p1__I__I__I(populationSize$2, forIndex$2) : this$24.get__O()))
       } else {
         throw new $c_s_MatchError().init___O(x0$2)
       }
@@ -18612,29 +18628,6 @@ $c_Lcountdown_FormElement.prototype.equals__O__Z = (function(x$1) {
 $c_Lcountdown_FormElement.prototype.textValue__p1__T = (function() {
   return $as_T(this.inputElement$1.value)
 });
-$c_Lcountdown_FormElement.prototype.productElement__I__O = (function(x$1) {
-  switch (x$1) {
-    case 0: {
-      return this.field$1;
-      break
-    }
-    case 1: {
-      return this.initialValue$1;
-      break
-    }
-    case 2: {
-      return this.hint$1;
-      break
-    }
-    case 3: {
-      return this.validate$1;
-      break
-    }
-    default: {
-      throw new $c_jl_IndexOutOfBoundsException().init___T(("" + x$1))
-    }
-  }
-});
 $c_Lcountdown_FormElement.prototype.init___T__T__T__F1 = (function(field, initialValue, hint, validate) {
   this.field$1 = field;
   this.initialValue$1 = initialValue;
@@ -18669,7 +18662,7 @@ $c_Lcountdown_FormElement.prototype.init___T__T__T__F1 = (function(field, initia
   this.fieldId$1 = $as_T(thiz.toLowerCase());
   var this$15 = $m_Lscalatags_JsDom$all$();
   var jsx$2 = this$15.input__Lscalatags_JsDom$TypedTag();
-  var array = [$m_Lscalatags_JsDom$all$().type__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair("text", $m_Lscalatags_JsDom$all$().stringAttr$1), $m_Lscalatags_JsDom$all$().name__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair(this.fieldId$1, $m_Lscalatags_JsDom$all$().stringAttr$1), $m_Lscalatags_JsDom$all$().maxlength__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair("20", $m_Lscalatags_JsDom$all$().stringAttr$1), $m_Lscalatags_JsDom$all$().value__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair(initialValue, $m_Lscalatags_JsDom$all$().stringAttr$1)];
+  var array = [$m_Lscalatags_JsDom$all$().type__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair("text", $m_Lscalatags_JsDom$all$().stringAttr$1), $m_Lscalatags_JsDom$all$().name__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair(this.fieldId$1, $m_Lscalatags_JsDom$all$().stringAttr$1), $m_Lscalatags_JsDom$all$().maxlength__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair("100", $m_Lscalatags_JsDom$all$().stringAttr$1), $m_Lscalatags_JsDom$all$().value__Lscalatags_generic_Attr().$$colon$eq__O__Lscalatags_generic_AttrValue__Lscalatags_generic_AttrPair(initialValue, $m_Lscalatags_JsDom$all$().stringAttr$1)];
   this.inputElement$1 = jsx$2.apply__sc_Seq__Lscalatags_JsDom$TypedTag(new $c_sjs_js_WrappedArray().init___sjs_js_Array(array)).render__Lorg_scalajs_dom_raw_Element();
   this.inputElement$1.onkeyup = (function(arg$outer) {
     return (function(arg1$2) {
@@ -18700,6 +18693,29 @@ $c_Lcountdown_FormElement.prototype.init___T__T__T__F1 = (function(field, initia
   var array$5 = [jsx$7, jsx$6, jsx$4, new $c_Lscalatags_LowPriorityImplicits$bindNode().init___Lscalatags_LowPriorityImplicits__Lorg_scalajs_dom_raw_Node(this$33, e$1)];
   this.liElement$1 = jsx$10.apply__sc_Seq__Lscalatags_JsDom$TypedTag(new $c_sjs_js_WrappedArray().init___sjs_js_Array(array$5));
   return this
+});
+$c_Lcountdown_FormElement.prototype.productElement__I__O = (function(x$1) {
+  switch (x$1) {
+    case 0: {
+      return this.field$1;
+      break
+    }
+    case 1: {
+      return this.initialValue$1;
+      break
+    }
+    case 2: {
+      return this.hint$1;
+      break
+    }
+    case 3: {
+      return this.validate$1;
+      break
+    }
+    default: {
+      throw new $c_jl_IndexOutOfBoundsException().init___T(("" + x$1))
+    }
+  }
 });
 $c_Lcountdown_FormElement.prototype.toString__T = (function() {
   return $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(this)
@@ -19280,6 +19296,7 @@ $c_Lga_Seed.prototype.ga$Seed$$int__I__I = (function(maxSigned) {
       if ((e$2 !== null)) {
         var o11 = $m_s_util_control_NonFatal$().unapply__jl_Throwable__s_Option(e$2);
         if ((!o11.isEmpty__Z())) {
+          var e$3 = $as_jl_Throwable(o11.get__O());
           var jsx$3 = this.long$1;
           var t$1 = this.long$1;
           var lo$3 = t$1.lo$2;
@@ -19320,8 +19337,8 @@ $c_Lga_Seed.prototype.ga$Seed$$int__I__I = (function(maxSigned) {
                 var jsx$1;
                 var o11$1 = $m_s_util_control_NonFatal$().unapply__jl_Throwable__s_Option(e$2$1);
                 if ((!o11$1.isEmpty__Z())) {
-                  var e$3 = $as_jl_Throwable(o11$1.get__O());
-                  var jsx$1 = new $c_s_util_Failure().init___jl_Throwable(e$3);
+                  var e$3$1 = $as_jl_Throwable(o11$1.get__O());
+                  var jsx$1 = new $c_s_util_Failure().init___jl_Throwable(e$3$1);
                   break matchEnd8$1
                 };
                 throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2$1)
@@ -19331,7 +19348,7 @@ $c_Lga_Seed.prototype.ga$Seed$$int__I__I = (function(maxSigned) {
               throw e$1
             }
           };
-          throw new $c_jl_IllegalArgumentException().init___T(((((((("int failed w/ max=" + max) + ", long=") + jsx$3) + ", long.abs=") + jsx$2) + ", long.abs % (max + 1) is ") + jsx$1))
+          throw new $c_jl_IllegalArgumentException().init___T__jl_Throwable(((((((("int failed w/ max=" + max) + ", long=") + jsx$3) + ", long.abs=") + jsx$2) + ", long.abs % (max + 1) is ") + jsx$1), e$3)
         };
         throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2)
       } else {
@@ -19723,6 +19740,10 @@ $c_jl_IllegalArgumentException.prototype.init___ = (function() {
 });
 $c_jl_IllegalArgumentException.prototype.init___T = (function(s) {
   $c_jl_Throwable.prototype.init___T__jl_Throwable__Z__Z.call(this, s, null, true, true);
+  return this
+});
+$c_jl_IllegalArgumentException.prototype.init___T__jl_Throwable = (function(s, e) {
+  $c_jl_Throwable.prototype.init___T__jl_Throwable__Z__Z.call(this, s, e, true, true);
   return this
 });
 var $d_jl_IllegalArgumentException = new $TypeData().initClass({
@@ -29653,13 +29674,6 @@ function $f_sc_SeqLike__diff__sc_GenSeq__O($thiz, that) {
   })($thiz, occ, b)));
   return b.result__O()
 }
-function $f_sc_SeqLike__contains__O__Z($thiz, elem) {
-  return $thiz.exists__F1__Z(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, elem$1) {
-    return (function(x$12$2) {
-      return $m_sr_BoxesRunTime$().equals__O__O__Z(x$12$2, elem$1)
-    })
-  })($thiz, elem)))
-}
 function $f_sc_SeqLike__occCounts__psc_SeqLike__sc_Seq__scm_Map($thiz, sq) {
   var occ = new $c_sc_SeqLike$$anon$1().init___sc_SeqLike($thiz);
   sq.foreach__F1__V(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, occ$1) {
@@ -29798,9 +29812,6 @@ function $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z($thiz, that)
     return $f_sc_IterableLike__sameElements__sc_GenIterable__Z($thiz, that)
   }
 }
-function $f_sc_IndexedSeqOptimized__exists__F1__Z($thiz, p) {
-  return ($f_sc_IndexedSeqOptimized__prefixLengthImpl__psc_IndexedSeqOptimized__F1__Z__I($thiz, p, false) !== $thiz.length__I())
-}
 function $f_sc_IndexedSeqOptimized__toList__sci_List($thiz) {
   var i = (((-1) + $thiz.length__I()) | 0);
   var result = $m_sci_Nil$();
@@ -29814,13 +29825,6 @@ function $f_sc_IndexedSeqOptimized__toList__sci_List($thiz) {
 }
 function $f_sc_IndexedSeqOptimized__isEmpty__Z($thiz) {
   return ($thiz.length__I() === 0)
-}
-function $f_sc_IndexedSeqOptimized__prefixLengthImpl__psc_IndexedSeqOptimized__F1__Z__I($thiz, p, expectTrue) {
-  var i = 0;
-  while (((i < $thiz.length__I()) && ($uZ(p.apply__O__O($thiz.apply__I__O(i))) === expectTrue))) {
-    i = ((1 + i) | 0)
-  };
-  return i
 }
 function $f_sc_IndexedSeqOptimized__init__O($thiz) {
   return (($thiz.length__I() > 0) ? $thiz.slice__I__I__O(0, (((-1) + $thiz.length__I()) | 0)) : $f_sc_TraversableLike__init__O($thiz))
@@ -29924,16 +29928,6 @@ function $f_sc_LinearSeqOptimized__lengthCompare__I__I($thiz, len) {
     return $f_sc_LinearSeqOptimized__loop$1__psc_LinearSeqOptimized__I__sc_LinearSeqOptimized__I__I($thiz, i, xs, len)
   }
 }
-function $f_sc_LinearSeqOptimized__exists__F1__Z($thiz, p) {
-  var these = $thiz;
-  while ((!these.isEmpty__Z())) {
-    if ($uZ(p.apply__O__O(these.head__O()))) {
-      return true
-    };
-    these = $as_sc_LinearSeqOptimized(these.tail__O())
-  };
-  return false
-}
 function $f_sc_LinearSeqOptimized__sameElements__sc_GenIterable__Z($thiz, that) {
   if ($is_sc_LinearSeq(that)) {
     var x2 = $as_sc_LinearSeq(that);
@@ -29991,16 +29985,6 @@ function $f_sc_LinearSeqOptimized__last__O($thiz) {
     nx = $as_sc_LinearSeqOptimized(nx.tail__O())
   };
   return these.head__O()
-}
-function $f_sc_LinearSeqOptimized__contains__O__Z($thiz, elem) {
-  var these = $thiz;
-  while ((!these.isEmpty__Z())) {
-    if ($m_sr_BoxesRunTime$().equals__O__O__Z(these.head__O(), elem)) {
-      return true
-    };
-    these = $as_sc_LinearSeqOptimized(these.tail__O())
-  };
-  return false
 }
 function $f_sc_LinearSeqOptimized__isDefinedAt__I__Z($thiz, x) {
   return ((x >= 0) && ($f_sc_LinearSeqOptimized__lengthCompare__I__I($thiz, x) > 0))
@@ -30668,10 +30652,6 @@ $c_sc_AbstractIterable.prototype.thisCollection__sc_Iterable = (function() {
 $c_sc_AbstractIterable.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IterableLike__sameElements__sc_GenIterable__Z(this, that)
 });
-$c_sc_AbstractIterable.prototype.exists__F1__Z = (function(p) {
-  var this$1 = this.iterator__sc_Iterator();
-  return $f_sc_Iterator__exists__F1__Z(this$1, p)
-});
 $c_sc_AbstractIterable.prototype.thisCollection__sc_Traversable = (function() {
   return this.thisCollection__sc_Iterable()
 });
@@ -30774,9 +30754,6 @@ $c_sci_StringOps.prototype.lengthCompare__I__I = (function(len) {
 });
 $c_sci_StringOps.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
-});
-$c_sci_StringOps.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
 });
 $c_sci_StringOps.prototype.isEmpty__Z = (function() {
   return $f_sc_IndexedSeqOptimized__isEmpty__Z(this)
@@ -31101,9 +31078,6 @@ $c_scm_ArrayOps$ofBoolean.prototype.lengthCompare__I__I = (function(len) {
 $c_scm_ArrayOps$ofBoolean.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
 });
-$c_scm_ArrayOps$ofBoolean.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
-});
 $c_scm_ArrayOps$ofBoolean.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
 });
@@ -31286,9 +31260,6 @@ $c_scm_ArrayOps$ofByte.prototype.lengthCompare__I__I = (function(len) {
 });
 $c_scm_ArrayOps$ofByte.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
-});
-$c_scm_ArrayOps$ofByte.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
 });
 $c_scm_ArrayOps$ofByte.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
@@ -31474,9 +31445,6 @@ $c_scm_ArrayOps$ofChar.prototype.lengthCompare__I__I = (function(len) {
 $c_scm_ArrayOps$ofChar.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
 });
-$c_scm_ArrayOps$ofChar.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
-});
 $c_scm_ArrayOps$ofChar.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
 });
@@ -31659,9 +31627,6 @@ $c_scm_ArrayOps$ofDouble.prototype.lengthCompare__I__I = (function(len) {
 });
 $c_scm_ArrayOps$ofDouble.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
-});
-$c_scm_ArrayOps$ofDouble.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
 });
 $c_scm_ArrayOps$ofDouble.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
@@ -31846,9 +31811,6 @@ $c_scm_ArrayOps$ofFloat.prototype.lengthCompare__I__I = (function(len) {
 $c_scm_ArrayOps$ofFloat.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
 });
-$c_scm_ArrayOps$ofFloat.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
-});
 $c_scm_ArrayOps$ofFloat.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
 });
@@ -32031,9 +31993,6 @@ $c_scm_ArrayOps$ofInt.prototype.lengthCompare__I__I = (function(len) {
 });
 $c_scm_ArrayOps$ofInt.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
-});
-$c_scm_ArrayOps$ofInt.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
 });
 $c_scm_ArrayOps$ofInt.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
@@ -32218,9 +32177,6 @@ $c_scm_ArrayOps$ofLong.prototype.lengthCompare__I__I = (function(len) {
 $c_scm_ArrayOps$ofLong.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
 });
-$c_scm_ArrayOps$ofLong.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
-});
 $c_scm_ArrayOps$ofLong.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
 });
@@ -32403,9 +32359,6 @@ $c_scm_ArrayOps$ofRef.prototype.lengthCompare__I__I = (function(len) {
 });
 $c_scm_ArrayOps$ofRef.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
-});
-$c_scm_ArrayOps$ofRef.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
 });
 $c_scm_ArrayOps$ofRef.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
@@ -32591,9 +32544,6 @@ $c_scm_ArrayOps$ofShort.prototype.lengthCompare__I__I = (function(len) {
 $c_scm_ArrayOps$ofShort.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
 });
-$c_scm_ArrayOps$ofShort.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
-});
 $c_scm_ArrayOps$ofShort.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
 });
@@ -32775,9 +32725,6 @@ $c_scm_ArrayOps$ofUnit.prototype.lengthCompare__I__I = (function(len) {
 });
 $c_scm_ArrayOps$ofUnit.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
-});
-$c_scm_ArrayOps$ofUnit.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
 });
 $c_scm_ArrayOps$ofUnit.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
@@ -33332,9 +33279,6 @@ $c_sc_AbstractSeq.prototype.$$plus$colon__O__scg_CanBuildFrom__O = (function(ele
 $c_sc_AbstractSeq.prototype.thisCollection__sc_Seq = (function() {
   return this
 });
-$c_sc_AbstractSeq.prototype.contains__O__Z = (function(elem) {
-  return $f_sc_SeqLike__contains__O__Z(this, elem)
-});
 $c_sc_AbstractSeq.prototype.updated__I__O__scg_CanBuildFrom__O = (function(index, elem, bf) {
   return $f_sc_SeqLike__updated__I__O__scg_CanBuildFrom__O(this, index, elem, bf)
 });
@@ -33800,6 +33744,15 @@ $c_Lscalatags_JsDom$all$.prototype.init___ = (function() {
   $f_Lscalatags_JsDom$Aggregate__$$init$__V(this);
   return this
 });
+$c_Lscalatags_JsDom$all$.prototype.p__Lscalatags_JsDom$TypedTag = (function() {
+  var b = this.bitmap$0$1;
+  var lo = (32768 & b.lo$2);
+  if ((lo === 0)) {
+    return this.p$lzycompute__p1__Lscalatags_JsDom$TypedTag()
+  } else {
+    return this.p$1
+  }
+});
 $c_Lscalatags_JsDom$all$.prototype.rows__Lscalatags_generic_Attr = (function() {
   var b = this.bitmap$2$1;
   var hi = (16 & b.hi$2);
@@ -33977,6 +33930,19 @@ $c_Lscalatags_JsDom$all$.prototype.ul__Lscalatags_JsDom$TypedTag = (function() {
   } else {
     return this.ul$1
   }
+});
+$c_Lscalatags_JsDom$all$.prototype.p$lzycompute__p1__Lscalatags_JsDom$TypedTag = (function() {
+  var b = this.bitmap$0$1;
+  var lo = (32768 & b.lo$2);
+  if ((lo === 0)) {
+    var ns = $m_Lscalatags_generic_Namespace$().htmlNamespaceConfig$1;
+    this.p$1 = $as_Lscalatags_JsDom$TypedTag($f_Lscalatags_jsdom_TagFactory__typedTag__T__Z__Lscalatags_generic_Namespace__Lscalatags_generic_TypedTag(this, "p", false, ns));
+    var b$1 = this.bitmap$0$1;
+    var lo$1 = (32768 | b$1.lo$2);
+    var hi = b$1.hi$2;
+    this.bitmap$0$1 = new $c_sjsr_RuntimeLong().init___I__I(lo$1, hi)
+  };
+  return this.p$1
 });
 $c_Lscalatags_JsDom$all$.prototype.$class__Lscalatags_generic_Attr = (function() {
   var b = this.bitmap$4$1;
@@ -36295,15 +36261,6 @@ $c_sci_Queue.prototype.thisCollection__sc_Iterable = (function() {
 $c_sci_Queue.prototype.apply__O__O = (function(v1) {
   return this.apply__I__O($uI(v1))
 });
-$c_sci_Queue.prototype.exists__F1__Z = (function(p) {
-  var this$1 = this.in$4;
-  if ($f_sc_LinearSeqOptimized__exists__F1__Z(this$1, p)) {
-    return true
-  } else {
-    var this$2 = this.out$4;
-    return $f_sc_LinearSeqOptimized__exists__F1__Z(this$2, p)
-  }
-});
 $c_sci_Queue.prototype.isEmpty__Z = (function() {
   return (this.in$4.isEmpty__Z() && this.out$4.isEmpty__Z())
 });
@@ -37450,9 +37407,6 @@ $c_sci_Stream.prototype.apply__O__O = (function(v1) {
   var n = $uI(v1);
   return $f_sc_LinearSeqOptimized__apply__I__O(this, n)
 });
-$c_sci_Stream.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_LinearSeqOptimized__exists__F1__Z(this, p)
-});
 $c_sci_Stream.prototype.seq__sc_Iterable = (function() {
   return this
 });
@@ -37630,9 +37584,6 @@ $c_sci_Stream.prototype.drop__I__sci_Stream = (function(n) {
       continue _drop
     }
   }
-});
-$c_sci_Stream.prototype.contains__O__Z = (function(elem) {
-  return $f_sc_LinearSeqOptimized__contains__O__Z(this, elem)
 });
 $c_sci_Stream.prototype.thisCollection__sc_Seq = (function() {
   return this
@@ -38358,9 +38309,6 @@ $c_sci_List.prototype.apply__O__O = (function(v1) {
 $c_sci_List.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_LinearSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
 });
-$c_sci_List.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_LinearSeqOptimized__exists__F1__Z(this, p)
-});
 $c_sci_List.prototype.seq__sc_Iterable = (function() {
   return this
 });
@@ -38498,9 +38446,6 @@ $c_sci_List.prototype.drop__I__O = (function(n) {
 });
 $c_sci_List.prototype.thisCollection__sc_Seq = (function() {
   return this
-});
-$c_sci_List.prototype.contains__O__Z = (function(elem) {
-  return $f_sc_LinearSeqOptimized__contains__O__Z(this, elem)
 });
 $c_sci_List.prototype.isDefinedAt__O__Z = (function(x) {
   var x$1 = $uI(x);
@@ -39575,9 +39520,6 @@ $c_sci_WrappedString.prototype.apply__O__O = (function(v1) {
   var c = (65535 & $uI(thiz.charCodeAt(n)));
   return new $c_jl_Character().init___C(c)
 });
-$c_sci_WrappedString.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
-});
 $c_sci_WrappedString.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
 });
@@ -40064,9 +40006,6 @@ $c_scm_WrappedArray.prototype.lengthCompare__I__I = (function(len) {
 });
 $c_scm_WrappedArray.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
-});
-$c_scm_WrappedArray.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
 });
 $c_scm_WrappedArray.prototype.seq__sc_Iterable = (function() {
   return this
@@ -41747,10 +41686,6 @@ $c_scm_ListBuffer.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   var this$1 = this.scala$collection$mutable$ListBuffer$$start$6;
   return $f_sc_LinearSeqOptimized__sameElements__sc_GenIterable__Z(this$1, that)
 });
-$c_scm_ListBuffer.prototype.exists__F1__Z = (function(p) {
-  var this$1 = this.scala$collection$mutable$ListBuffer$$start$6;
-  return $f_sc_LinearSeqOptimized__exists__F1__Z(this$1, p)
-});
 $c_scm_ListBuffer.prototype.isEmpty__Z = (function() {
   return (this.len$6 === 0)
 });
@@ -41836,10 +41771,6 @@ $c_scm_ListBuffer.prototype.prependToList__sci_List__sci_List = (function(xs) {
     this.last0$6.tl$5 = xs;
     return this.toList__sci_List()
   }
-});
-$c_scm_ListBuffer.prototype.contains__O__Z = (function(elem) {
-  var this$1 = this.scala$collection$mutable$ListBuffer$$start$6;
-  return $f_sc_LinearSeqOptimized__contains__O__Z(this$1, elem)
 });
 $c_scm_ListBuffer.prototype.addString__scm_StringBuilder__T__T__T__scm_StringBuilder = (function(b, start, sep, end) {
   var this$1 = this.scala$collection$mutable$ListBuffer$$start$6;
@@ -42018,9 +41949,6 @@ $c_scm_StringBuilder.prototype.apply__O__O = (function(v1) {
 });
 $c_scm_StringBuilder.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
-});
-$c_scm_StringBuilder.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
 });
 $c_scm_StringBuilder.prototype.isEmpty__Z = (function() {
   return $f_sc_IndexedSeqOptimized__isEmpty__Z(this)
@@ -42261,9 +42189,6 @@ $c_sjs_js_WrappedArray.prototype.apply__O__O = (function(v1) {
 $c_sjs_js_WrappedArray.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
 });
-$c_sjs_js_WrappedArray.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
-});
 $c_sjs_js_WrappedArray.prototype.toList__sci_List = (function() {
   return $f_sc_IndexedSeqOptimized__toList__sci_List(this)
 });
@@ -42464,9 +42389,6 @@ $c_scm_ArrayBuffer.prototype.apply__O__O = (function(v1) {
 });
 $c_scm_ArrayBuffer.prototype.sameElements__sc_GenIterable__Z = (function(that) {
   return $f_sc_IndexedSeqOptimized__sameElements__sc_GenIterable__Z(this, that)
-});
-$c_scm_ArrayBuffer.prototype.exists__F1__Z = (function(p) {
-  return $f_sc_IndexedSeqOptimized__exists__F1__Z(this, p)
 });
 $c_scm_ArrayBuffer.prototype.isEmpty__Z = (function() {
   return $f_sc_IndexedSeqOptimized__isEmpty__Z(this)

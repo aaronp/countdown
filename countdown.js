@@ -1,4 +1,4 @@
-var slideSpeed = 800;
+var slideSpeed = 600;
 
 function transitionStart(idx, elm) {
   TransitionEvent.onTransitionStart(idx, elm);
