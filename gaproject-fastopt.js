@@ -22690,7 +22690,7 @@ $c_Lga_Offspring.prototype.toString__T = (function() {
   var tc = this.evidence$2$1;
   var this$2 = new $c_Lcats_Show$ToShowOps$$anon$1().init___Lcats_Show$ToShowOps__O__Lcats_Show(this$1, target, tc);
   var a = this$2.self$1;
-  return ((((("child " + jsx$2) + "@") + jsx$1) + ": ") + $objectToString(a))
+  return ((((("Gen " + jsx$2) + "@") + jsx$1) + ": ") + $objectToString(a))
 });
 $c_Lga_Offspring.prototype.hashCode__I = (function() {
   var acc = (-889275714);
