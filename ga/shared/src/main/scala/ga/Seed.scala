@@ -17,7 +17,7 @@ final case class Seed(long: Long) {
         (long.abs % (max + 1)).toInt
       } catch {
         case NonFatal(e) =>
-          throw new IllegalArgumentException(s"int failed w/ max=$max, long=$long, long.abs=${long.abs}, long.abs % (max + 1) is ${Try(long.abs % (max + 1))}")
+          throw new IllegalArgumentException(s"int failed w/ max=$max, long=$long, long.abs=${long.abs}, long.abs % (max + 1) is ${Try(long.abs % (max + 1))}", e)
       }
     }
   }

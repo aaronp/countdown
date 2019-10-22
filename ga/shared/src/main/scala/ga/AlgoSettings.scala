@@ -177,12 +177,8 @@ object AlgoSettings {
 
 
     range.map {
-      case (rnd, offsets) =>
-        def safeDefault = {
-          (0 to populationSize).find(inRange).getOrElse(sys.error(
-            s"Bug: Couldn't find a valid mate in $offsets for index $forIndex of population size $populationSize when given $rnd"))
-        }
-
+      case (_, offsets) =>
+        def safeDefault = (0 to populationSize).find(inRange).getOrElse(forIndex)
         offsets
           .find(inRange)
           .getOrElse(safeDefault)

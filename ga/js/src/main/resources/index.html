@@ -1,5 +1,10 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+
     <script src="jquery.min.js"></script>
     <script src="springy.js"></script>
     <script src="springyui.js"></script>
@@ -7,24 +12,132 @@
     <script src="gaproject-fastopt.js"></script>
     <script src="swipe.js"></script>
 
-    <link type="text/css" rel="stylesheet" href="swipe.css"/>
+    <link type="text/css" rel="stylesheet" href="form.css"/>
     <link type="text/css" rel="stylesheet" href="ga.css"/>
-    <script>
-
-    </script>
 </head>
 <body onload="init('slider')">
-<div style="height:120px">
+<div class="navigation">
     <button onclick="jumpToBeginning()">About</button>
-    <button onclick="jumpToConfig()">Configure</button>
+    <button onclick="jumpToConfig()">Countdown</button>
     <button onclick="jumpToComputeFrame()">Workings Out</button>
     <button onclick="jumpToSolutionFrame()">Solution</button>
 </div>
 
-<div id='slider' class='swipe'>
-    <div class='swipe-wrap'>
-        <div id="about">
-            This is a genetic algorithm example
+<div id="slider" class="swipe">
+    <div class="swipe-wrap">
+        <div id="about" class="about">
+            <h2>Countdown</h2>
+            <p>
+                I realized that starting an explanation based on binary might be a step too far, so I wanted to try
+                again using the popular British <a
+                    href="https://en.wikipedia.org/wiki/Countdown_(game_show)#Numbers_round">Countdown numbers game</a>.
+            </p>
+            <p>
+                Simply put, you randomly choose some target number which you have to reach by some combination of other
+                random input numbers.
+            </p>
+            <p>The game poses the problem, for example:</p><p> "Try to get the number 378 by adding, subtracting, multiplying
+                or dividing some combination of 25, 3, 8, 12, 9 and 15"
+            </p>
+            <h4>Approach One: Brute Force</h4>
+            <p>
+                You can ask a compute to "brute force" an answer by working through every possible permutation of the
+                input numbers. The problem there, however, is that takes exponential time for every additional input
+                number.
+                That is, a solution could go from taking seconds to minutes, then hours or days as we add more and more
+                potential input numbers.
+            </p>
+            <h4>Approach Two: model "Survival of the Fittest"</h4>
+            <p>
+                This sort of problem, however, lends itself to a more elegant and generic solution by modeling nature:
+            </p>
+            <ol>
+                <li>Start with a completely random population of possible equations.</li>
+                <li>Evaluate each equation. If one is valid (e.g. doesn't contain duplicate numbers) and evaluates to
+                    our target number, then that's our solution
+                </li>
+                <li>If we don't have a solution, then we "breed" parts of the population. We do this by taking a prefix
+                    of one parent and the suffix from another:
+                    <div>
+                        <p>The equation&nbsp;&nbsp;: 5 * 6 + 13 - 12 = 31</p>
+                        <p>Combined with&nbsp;: 9 / 3 - 4 + 6 = 5</p>
+                        <p>If we take the first (arbitrarily) at "5 * 6" and combine it with "- 4 + 6" from the second,
+                            we get:</p>
+                        <p>Offspring: 5 * 6 - 4 + 6 = 32</p>
+                    </div>
+                </li>
+                <li>With this new generation, we keep the "fittest" equations (those which come closest to our target
+                    number) and cull those which are furthest away.
+                </li>
+            </ol>
+            <p>
+                Added to that one final element, which is that we also very occasionally mutate a "gene". For example,
+                perhaps 1% of the time we might change a "+" to a "-", alter the length of the equation, or swap one
+                input number for another.
+            </p>
+            <p>
+                This approach fits any problem for which we can combine two potential solutions in some way and evaluate
+                the result against some idea of "fittest": chess games, artificial intelligence behavior, financial
+                pricing/trading algorithms, etc.
+            </p>
+            <p>That is why I find it so compelling -- we can observe what would seem like complex results from simple
+                combinations.
+                When I wrote this (the second time ;-) I hadn't even referenced any documentation -- the concepts are so
+                straight-forward you can just recall them and put the pieces together yourself.
+            </p>
+            <h3>Try it Out</h3>
+            <p>
+                And so, this is an example where you can supply a target number and input numbers and see if it can
+                solve the equation.
+            </p>
+            <p>In addition, you can provide an explicit 'seed' random value which controls the randomness for all the
+                points in the algorithm:
+            <ul>
+                <li>The initial equation population</li>
+                <li>The points at which genes are spliced from each parent</li>
+                <li>When and how mutations happen and how</li>
+            </ul>
+            </p>
+            <p>
+                Also configurable are the maximum number of generations to try before giving up, the maximum population
+                size, the mutation probability (e.g. 0.01 is 1%), as well as the minimum equation size to use for the
+                initial population and maximum nodes to render in the final display.
+            </p>
+            <p>
+                You can jump to it <a href="#" onclick="jumpToConfig()">here</a>.
+            </p>
+            <p>
+                <img src="example.png" width="1000px" height="800px"/>
+            </p>
+            <h3>About this Example</h3>
+            <p>
+                This is just one example of a <a href="https://en.wikipedia.org/wiki/Genetic_algorithm">genetic
+                algorithms</a>, which have extensively well documented <a
+                    href="https://towardsdatascience.com/introduction-to-genetic-algorithms-including-example-code-e396e98d8bf3">elsewhere</a>.
+            </p>
+            <p>
+                I've actually even written this before <a href="https://github.com/aaronp/ga">in Java</a>, but I wanted
+                an example which didn't have to start from a binary representation.
+            </p>
+            <p>
+                I also wanted to have better control over the randomness, expose a javascript version, and just
+                generally try and improve on my first pass.
+            <p>
+                A massive thanks and credit to some of the libraries/tech I've used.
+                Please feel free to fork and play with the code from <a href="https://github.com/aaronp/countdown">github.com/aaronp/countdown</a>
+            <ul>
+                <li><a href="http://getspringy.com/">springy</a> for the forced-layout</li>
+                <li><a href="https://www.sanwebe.com/2014/08/css-html-forms-designs">sanwebe</a> for the form css</li>
+                <li><a href="https://www.scala-js.org">scalajs</a> as always for letting me write this in <a
+                        href="https://www.scala-lang.org/">scala</a></li>
+                <li><a href="https://swipe.js.org">swipe.js.org</a> for the horizontal swipe-flow</li>
+                <li><a href="https://typelevel.org/cats/">cats</a> for the FP (e.g. <a
+                        href="https://typelevel.org/cats/datatypes/state.html">State</a> which allowed my control over
+                    random values)
+                </li>
+            </ul>
+            </p>
+
         </div>
         <div id="config">
         </div>

@@ -15,12 +15,13 @@ final case class FormElement[A] private (
 
   val inputElement = input(`type` := "text",
                            name := fieldId,
-                           maxlength := "20",
+                           maxlength := "100",
                            value := initialValue).render
 
   inputElement.onkeyup = _ => {
     validateCurrentValue()
   }
+
   def validateCurrentValue() = {
     validate(textValue) match {
       case Left(msg) => validationSpan.innerHTML = msg
@@ -37,6 +38,7 @@ final case class FormElement[A] private (
   )
 
   def currentValue(): Option[A] = currentValueEither().toOption
+
   def currentValueEither(): Either[String, A] = validate(textValue)
 
   private def textValue = inputElement.value
@@ -48,7 +50,9 @@ object FormElement {
     Try(textValue.split(",").flatMap(_.split(" ")).map(_.toInt).toSet)
   }
 
+  // our poor-man's enum 'values()' for the form
   private val formElements = ListBuffer[FormElement[_]]()
+
   private def newFormElement[A](field: String,
                                 initialValue: String,
                                 hint: String,
@@ -113,10 +117,14 @@ object FormElement {
     def elements: List[FormElement[_]] = formElements.toList
 
     val targetNr =
-      FormElement.int("Target Number", "12", "The number we're trying to find")
+      FormElement.int("Target Number",
+                      "378",
+                      "The number we're trying to find",
+                      0,
+                      1000000000)
     val inputNumbers =
       FormElement.ints("Using Input Numbers",
-                       "3 4 6 1",
+                       "25 3 8 12 9 15",
                        "The numbers available to reach the target number")
     val seed = FormElement.optLong(
       "Random Value Seed",
@@ -124,7 +132,7 @@ object FormElement {
       "An optional value with which to initialise our random value generator")
     val maxGen = FormElement.int(
       "Max Generations",
-      "200",
+      "60",
       "How many generations to allow before we quit without an answer",
       2,
       5000)
@@ -143,8 +151,9 @@ object FormElement {
     val minEquationSize = {
       val base = FormElement.int(
         "Minimum Equation Size",
-        "1",
+        "3",
         "The smallest equation length to use in the initial population")
+
       def checkInputs(str: String) = {
         base.validate(str) match {
           case right @ Right(size) =>
@@ -160,15 +169,17 @@ object FormElement {
           case left => left
         }
       }
+
       base.copy(validate = checkInputs)
     }
 
     val maxNodes =
-      FormElement.int("Solution Node Limit",
-                      "20",
-                      "The maximum number of nodes to render",
-                      1,
-                      50)
+      FormElement.int(
+        "Max Solution Nodes to Display",
+        "20",
+        "The maximum number of nodes to show when displaying our solution graph",
+        1,
+        50)
 
     def asSettings: Option[(Option[Long], AlgoSettings[Equation])] = {
       for {

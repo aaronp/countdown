@@ -2,7 +2,7 @@ package countdown
 
 import ga.Geneology
 import ga.GeneticAlgo.Generation
-import org.scalajs.dom.html.Div
+import org.scalajs.dom.html.{Div, Paragraph}
 import org.scalajs.dom.raw.HTMLTextAreaElement
 import org.scalajs.dom.window
 import scalatags.JsDom.all._
@@ -32,6 +32,8 @@ object CountdownPage {
 
   private var logContent = ListBuffer[String]()
 
+  private var lastUpdateTime = 0L
+
   @JSExport
   def render(configId: String,
              computeContainerId: String,
@@ -42,6 +44,8 @@ object CountdownPage {
     computeContainer.innerHTML = ""
     val logContainer =
       textarea(`class` := "logs", cols := 200, rows := 400).render
+    val calculatingMsg: Paragraph = p("Calculating ").render
+    computeContainer.appendChild(calculatingMsg)
     computeContainer.appendChild(logContainer)
 
     // a function we pass in to log progress
@@ -51,17 +55,31 @@ object CountdownPage {
       val header = s"\n$sep\nGeneration $gen:\n"
 
       val content = population.mkString(header, "\n", "")
-      window.console.info(content)
+      //      window.console.info(content)
       logContent += content
 
-//      logContainer.value += content
-      logContainer.value = logContent.mkString("\n")
+      updateLogs(content)
+    }
+
+    def updateLogs(next: String) = {
+      val now = System.currentTimeMillis()
+      if (now > lastUpdateTime + 2000) {
+        lastUpdateTime = now
+        logContainer.value = logContent.mkString("\n")
+        //      computeContainer.appendChild(span(next).render)
+        logContainer.scrollTop = logContainer.scrollHeight
+      } else {
+
+        window.console.info("skipping update...")
+      }
     }
 
     val scriptContainer = HtmlUtils.divById(scriptContainerId)
-    val form = ConfigForm(
-      logGeneration,
-      onSolve(scriptContainer, computeContainerId, resultCanvasId))
+    val form = ConfigForm(logGeneration,
+                          onSolve(scriptContainer,
+                                  computeContainerId,
+                                  resultCanvasId,
+                                  calculatingMsg))
 
     val container = HtmlUtils.divById(configId)
     container.innerHTML = ""
@@ -94,6 +112,7 @@ object CountdownPage {
   private def clearResults(scriptContainer: Div,
                            computeContainerId: String,
                            resultCanvasId: String) = {
+    window.console.log("Clearing results")
     scriptContainer.innerHTML = ""
 
     logContent.clear()
@@ -122,13 +141,17 @@ object CountdownPage {
     * @param maxNodes
     * @return
     */
-  def onSolve(scriptContainer: Div,
-              computeContainerId: String,
-              resultCanvasId: String)(cfg: CountdownConfig, maxNodes: Int) = {
+  def onSolve(
+      scriptContainer: Div,
+      computeContainerId: String,
+      resultCanvasId: String,
+      calculatingMsg: Paragraph)(cfg: CountdownConfig, maxNodes: Int) = {
 
     // clear previous results
     clearResults(scriptContainer, computeContainerId, resultCanvasId)
 
+    calculatingMsg.innerHTML =
+      s"Calculating ${cfg.targetValue} from ${cfg.inputValues.toSeq.sorted.mkString(" ")} ..."
     TransitionEvent.registerListener {
       case event: TransitionEnd if event.isComputeTarget =>
         global.execute(() => {

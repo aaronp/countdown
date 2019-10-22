@@ -73,7 +73,7 @@ object GeneticAlgo {
         //
         val (mateSeed, partnerIndices) =
           AlgoSettings.nextMateIndices(i, max).run(nextSeed).value
-        require(!partnerIndices.contains(i))
+        //partnerIndices.contains(i)
 
         //
         // actually combine the 'mom' and 'dad' records
