@@ -2274,8 +2274,7 @@ $c_Lcountdown_CountdownConfig$implicits$.prototype.$classData = $d_Lcountdown_Co
 /** @constructor */
 function $c_Lcountdown_CountdownPage$() {
   $c_O.call(this);
-  this.logContent$1 = null;
-  this.lastUpdateTime$1 = $m_sjsr_RuntimeLong$().Zero__sjsr_RuntimeLong()
+  this.logContent$1 = null
 }
 $c_Lcountdown_CountdownPage$.prototype = new $h_O();
 $c_Lcountdown_CountdownPage$.prototype.constructor = $c_Lcountdown_CountdownPage$;
@@ -2287,7 +2286,6 @@ $h_Lcountdown_CountdownPage$.prototype = $c_Lcountdown_CountdownPage$.prototype;
 $c_Lcountdown_CountdownPage$.prototype.init___ = (function() {
   $n_Lcountdown_CountdownPage$ = this;
   this.logContent$1 = $as_scm_ListBuffer($m_scm_ListBuffer$().apply__sc_Seq__sc_GenTraversable($m_sci_Nil$()));
-  this.lastUpdateTime$1 = $m_sjsr_RuntimeLong$().Zero__sjsr_RuntimeLong();
   return this
 });
 $c_Lcountdown_CountdownPage$.prototype.clearResults__p1__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__sjs_js_Dynamic = (function(scriptContainer, computeContainerId, resultCanvasId) {
@@ -2366,23 +2364,8 @@ $c_Lcountdown_CountdownPage$.prototype.render__T__T__T__T__Lorg_scalajs_dom_raw_
   container.innerHTML = "";
   return container.appendChild(form.render__Lorg_scalajs_dom_raw_Element())
 });
-$c_Lcountdown_CountdownPage$.prototype.updateLogs$1__p1__T__Lorg_scalajs_dom_raw_HTMLTextAreaElement__V = (function(next, logContainer$1) {
-  var t = $m_jl_System$().currentTimeMillis__J();
-  var lo = t.lo$2;
-  var hi = t.hi$2;
-  var b = this.lastUpdateTime$1;
-  var bhi = b.hi$2;
-  var lo$1 = ((2000 + b.lo$2) | 0);
-  var hi$1 = ((((-2147483648) ^ lo$1) < (-2147481648)) ? ((1 + bhi) | 0) : bhi);
-  if (((hi === hi$1) ? (((-2147483648) ^ lo) > ((-2147483648) ^ lo$1)) : (hi > hi$1))) {
-    this.lastUpdateTime$1 = new $c_sjsr_RuntimeLong().init___I__I(lo, hi);
-    var this$2 = this.logContent$1;
-    var this$3 = this$2.scala$collection$mutable$ListBuffer$$start$6;
-    logContainer$1.value = $f_sc_TraversableOnce__mkString__T__T__T__T(this$3, "", "\n", "");
-    logContainer$1.scrollTop = $uI(logContainer$1.scrollHeight)
-  } else {
-    $m_Lorg_scalajs_dom_package$().window__Lorg_scalajs_dom_raw_Window().console.info("skipping update...")
-  }
+$c_Lcountdown_CountdownPage$.prototype.$$js$exported$meth$render__T__T__T__T__O = (function(configId, computeContainerId, scriptContainerId, resultCanvasId) {
+  return this.render__T__T__T__T__Lorg_scalajs_dom_raw_Node(configId, computeContainerId, scriptContainerId, resultCanvasId)
 });
 $c_Lcountdown_CountdownPage$.prototype.onSolve__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__Lorg_scalajs_dom_raw_HTMLParagraphElement__Lcountdown_CountdownConfig__I__sjs_js_Dynamic = (function(scriptContainer, computeContainerId, resultCanvasId, calculatingMsg, cfg, maxNodes) {
   this.clearResults__p1__Lorg_scalajs_dom_raw_HTMLDivElement__T__T__sjs_js_Dynamic(scriptContainer, computeContainerId, resultCanvasId);
@@ -2393,9 +2376,6 @@ $c_Lcountdown_CountdownPage$.prototype.onSolve__Lorg_scalajs_dom_raw_HTMLDivElem
   calculatingMsg.innerHTML = (((("Calculating " + jsx$1) + " from ") + $as_sc_TraversableOnce($f_sc_SeqLike__sorted__s_math_Ordering__O(this$2, ord)).mkString__T__T(" ")) + " ...");
   $m_Lcountdown_TransitionEvent$().registerListener__s_PartialFunction__s_PartialFunction(new $c_Lcountdown_CountdownPage$$anonfun$onSolve$1().init___Lorg_scalajs_dom_raw_HTMLDivElement__T__Lcountdown_CountdownConfig__I(scriptContainer, resultCanvasId, cfg, maxNodes));
   return $m_Lcountdown_TransitionEvent$().doJumpToComputeFrame__sjs_js_Dynamic()
-});
-$c_Lcountdown_CountdownPage$.prototype.$$js$exported$meth$render__T__T__T__T__O = (function(configId, computeContainerId, scriptContainerId, resultCanvasId) {
-  return this.render__T__T__T__T__Lorg_scalajs_dom_raw_Node(configId, computeContainerId, scriptContainerId, resultCanvasId)
 });
 $c_Lcountdown_CountdownPage$.prototype.logGeneration$1__p1__T2__Lorg_scalajs_dom_raw_HTMLTextAreaElement__V = (function(generation, logContainer$1) {
   if ((generation === null)) {
@@ -2408,7 +2388,11 @@ $c_Lcountdown_CountdownPage$.prototype.logGeneration$1__p1__T2__Lorg_scalajs_dom
   var header = (((("\n" + sep) + "\nGeneration ") + gen) + ":\n");
   var content = $f_sc_TraversableOnce__mkString__T__T__T__T(population, header, "\n", "");
   this.logContent$1.$$plus$eq__O__scm_ListBuffer(content);
-  this.updateLogs$1__p1__T__Lorg_scalajs_dom_raw_HTMLTextAreaElement__V(content, logContainer$1)
+  $m_Lorg_scalajs_dom_package$().window__Lorg_scalajs_dom_raw_Window().console.info(content);
+  var this$4 = this.logContent$1;
+  var this$5 = this$4.scala$collection$mutable$ListBuffer$$start$6;
+  logContainer$1.value = $f_sc_TraversableOnce__mkString__T__T__T__T(this$5, "", "\n", "");
+  logContainer$1.scrollTop = $uI(logContainer$1.scrollHeight)
 });
 $c_Lcountdown_CountdownPage$.prototype.render = (function(arg$1, arg$2, arg$3, arg$4) {
   var prep0 = $as_T(arg$1);
@@ -2848,6 +2832,8 @@ $c_Lcountdown_TransitionEvent$.prototype.onTransitionEnd__I__Lorg_scalajs_dom_ra
   this.onTransition__p1__Lcountdown_TransitionEvent__V(new $c_Lcountdown_TransitionEnd().init___I__Lorg_scalajs_dom_raw_HTMLDivElement(index, element))
 });
 $c_Lcountdown_TransitionEvent$.prototype.onTransitionStart__I__Lorg_scalajs_dom_raw_HTMLDivElement__V = (function(index, element) {
+  $m_Lorg_scalajs_dom_package$().window__Lorg_scalajs_dom_raw_Window().document.body.scrollTop = 0.0;
+  $m_Lorg_scalajs_dom_package$().window__Lorg_scalajs_dom_raw_Window().document.documentElement.scrollTop = 0.0;
   var jsx$1 = $m_Lorg_scalajs_dom_package$().window__Lorg_scalajs_dom_raw_Window().console;
   var s = (((("onTransitionStart(" + index) + ", ") + element) + ")");
   jsx$1.info(s);

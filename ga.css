@@ -35,14 +35,15 @@
 }
 .logs {
   display: block;
-  margin-left: 100px;
-  margin-right: 100px;
+  margin-left: 40px;
+  margin-right: 40px;
   overflow-y:auto;
   border-width: 0px;
 }
 
 .navigation {
   height:40px
+  background-color:#F3F3F3;
 }
 
 li {
@@ -52,7 +53,7 @@ li {
 
 .about > * {
   display: block;
-  margin-left: 100px;
-  margin-right: 100px;
+  margin-left: 40px;
+  margin-right: 40px;
   overflow: auto;
 }
