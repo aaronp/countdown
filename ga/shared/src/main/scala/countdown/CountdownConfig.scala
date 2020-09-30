@@ -5,15 +5,14 @@ import java.nio.file.Path
 import ga.GeneticAlgo.Generation
 import ga._
 
-final case class CountdownConfig(
-                                  settings: AlgoSettings[Equation],
-                                  rand: Seed,
-                                  inputValues: Set[Int],
-                                  targetValue: Int,
-                                  debug: Generation[Equation] => Unit,
-                                  minEquationSize: Int,
-                                  maxEquationSize: Int,
-                                  writeSolution: Option[(Path, Int)]
+final case class CountdownConfig(settings: AlgoSettings[Equation],
+                                 rand: Seed,
+                                 inputValues: Set[Int],
+                                 targetValue: Int,
+                                 debug: Generation[Equation] => Unit,
+                                 minEquationSize: Int,
+                                 maxEquationSize: Int,
+                                 writeSolution: Option[(Path, Int)]
                                 ) {
 
   def initPopulation: (Seed, Seq[Equation]) = {

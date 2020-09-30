@@ -21,6 +21,15 @@ final case class AlgoSettings[A: Ordering : Show](
 
   def ordering: Ordering[A] = Ordering[A]
 
+  def withSizes(
+                 newMaxPopulationSize: Option[Int] = None,
+                 newMaxGenerations: Option[Int] = None,
+               ) = {
+    copy(
+      maxPopulationSize = newMaxPopulationSize.getOrElse(maxPopulationSize),
+      maxGenerations = newMaxGenerations.getOrElse(maxGenerations)
+    )
+  }
   def show: Show[A] = Show[A]
 
   object implicits {

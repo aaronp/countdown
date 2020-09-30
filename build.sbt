@@ -6,13 +6,12 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 import sbtrelease.ReleasePlugin.autoImport.releaseCrossBuild
 
 ThisBuild / organization := "com.github.aaronp"
-ThisBuild / scalaVersion := "2.12.10"
+ThisBuild / scalaVersion := "2.13.3"
 
 val projectName = "ga"
 val username = "aaronp"
-val scalaTwelve = "2.12.10"
-val scalaThirteen = "2.13.0"
-val defaultScalaVersion = scalaTwelve
+val scalaThirteen = "2.13.3"
+val defaultScalaVersion = scalaThirteen
 
 name := projectName
 
@@ -24,15 +23,17 @@ enablePlugins(SiteScaladocPlugin)
 enablePlugins(ParadoxMaterialThemePlugin) // see https://jonas.github.io/paradox-material-theme/getting-started.html
 
 scalaVersion := defaultScalaVersion
-val scalaVersions = Seq(scalaTwelve)
+val scalaVersions = Seq(scalaThirteen)
 crossScalaVersions := scalaVersions //, scalaThirteen)
 
 paradoxProperties += ("project.url" -> s"https://$username.github.io/$projectName/docs/current/")
 
 val testDependencies = List(
   "junit" % "junit" % "4.12" % "test",
-  "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-  "org.scala-lang.modules" %% "scala-xml" % "1.1.1" % "test",
+  "org.scalatest" %% "scalatest" % "3.2.2" % "test",
+//  "org.scalatest" %% "scalatest-wordspec" % "3.2.2" % "test",
+//  "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.2" % "test",
+  "org.scala-lang.modules" %% "scala-xml" % "1.3.0" % "test",
   "org.pegdown" % "pegdown" % "1.6.0" % "test"
 )
 
@@ -89,23 +90,27 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
     coverageMinimum := 90,
     coverageFailOnMinimum := true
   )
-  .jvmSettings(
-    libraryDependencies ++= List(
-      "com.typesafe" % "config" % "1.3.4",
-      "com.github.aaronp" %% "args4c" % "0.7.0",
-      "com.github.aaronp" %% "eie" % "0.0.5"
-    ))
+  .jvmSettings(libraryDependencies ++= List(
+    "com.typesafe" % "config" % "1.3.4",
+    "com.github.aaronp" %% "args4c" % "0.7.0",
+    "com.github.aaronp" %% "eie" % "1.0.0",
+    "ch.qos.logback" % "logback-classic" % "1.2.3",
+    "io.circe" %% "circe-generic" % "0.13.0",
+    "org.http4s" %% "http4s-circe" % "0.21.7",
+    "org.http4s" %% "http4s-core" % "0.21.7",
+    "org.http4s" %% "http4s-dsl" % "0.21.7",
+    "org.http4s" %% "http4s-blaze-server" % "0.21.7"
+  ))
   .settings(
     libraryDependencies ++= List(
-      "org.typelevel" %%% "cats-core" % "2.0.0"
+      "org.typelevel" %%% "cats-core" % "2.2.0"
     )
   )
-  .jsSettings(
-    libraryDependencies ++= List(
-      "com.lihaoyi" %%% "scalatags" % "0.7.0",
-      "com.lihaoyi" %%% "scalarx" % "0.4.0",
-      "org.scalatest" %%% "scalatest" % "3.0.8" % "test"
-    ))
+  .jsSettings(libraryDependencies ++= List(
+    "com.lihaoyi" %%% "scalatags" % "0.9.2",
+    "com.lihaoyi" %%% "scalarx" % "0.4.3",
+    "org.scalatest" %%% "scalatest" % "3.2.2" % "test",
+  ))
 
 lazy val gaProjectJVM = gaProject.jvm
 lazy val gaProjectJS = gaProject.js

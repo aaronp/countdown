@@ -37,7 +37,7 @@ final case class Equation(expression: Seq[Element]) {
   }
 
   def mutateAt(index: Int, inputNumbers: Set[Int]): State[Seed, Equation] = {
-    val elm = expression(index)
+    val elm: Element = expression(index)
     elm match {
       case op: Op =>
         Seed.nextInt(2).map { n =>
@@ -50,9 +50,15 @@ final case class Equation(expression: Seq[Element]) {
         }
       case Num(x) =>
         val remainingNumbers = inputNumbers - x
-        Seed.nextInt(remainingNumbers.size - 1).map { numIdx =>
-          val newNum = remainingNumbers.toSeq(numIdx)
-          swap(index, Num(newNum))
+        if (remainingNumbers.isEmpty) {
+          Seed.nextInt(1).map { _ =>
+            Equation(Nil)
+          }
+        } else {
+          Seed.nextInt(remainingNumbers.size - 1).map { numIdx =>
+            val newNum = remainingNumbers.toSeq(numIdx)
+            swap(index, Num(newNum))
+          }
         }
     }
   }
@@ -75,6 +81,8 @@ final case class Equation(expression: Seq[Element]) {
   def combineAt(other: Equation, index: Int): Equation = {
     val safeIndex = (size - 1).min(other.size - 1).min(index).max(0)
     safeIndex match {
+      case 0 if expression.isEmpty => other
+      case 0 if other.expression.isEmpty => this
       case 0 => other.swap(0, expression(0))
       case n =>
         copy(
@@ -108,6 +116,7 @@ object Equation {
 
   private[countdown] final def evalReduced(eq: Seq[Element]): Int = {
     eq match {
+      case Seq() => Int.MinValue
       case Seq(Num(x)) => x
       case Num(x) +: Add +: theRest => x + evalReduced(theRest)
       case Num(x) +: Subtract +: Num(y) +: theRest =>
@@ -115,7 +124,7 @@ object Equation {
     }
   }
 
-  def showForTarget(targetNumber: Int) = {
+  def showForTarget(targetNumber: Int): Show[Equation] = {
     Show.fromToString[Equation]
   }
 
@@ -168,6 +177,7 @@ object Equation {
                     fromValues: Set[Int],
                     seed: Seed): (Seed, Equation) = {
     require(fromValues.nonEmpty, "No input values specified")
+
     def next(valuePool: List[Int]) =
       for {
         index <- Seed.nextInt(valuePool.size - 1)
