@@ -204,7 +204,10 @@ makePage := {
   IO.copy(onDemand, CopyOptions().withOverwrite(false))
 }
 
-ThisBuild / buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
+ThisBuild / buildInfoKeys := Seq[BuildInfoKey](name,
+                                               version,
+                                               scalaVersion,
+                                               sbtVersion)
 ThisBuild / buildInfoPackage := "countdown.build"
 
 // see http://scalameta.org/scalafmt/
