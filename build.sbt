@@ -90,7 +90,8 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
     releaseCrossBuild := true,
     coverageMinimum := 90,
     coverageFailOnMinimum := true,
-    addArtifact(Artifact(projectName, "assembly"), sbtassembly.AssemblyKeys.assembly),
+    addArtifact(Artifact(projectName, "assembly"),
+                sbtassembly.AssemblyKeys.assembly),
     artifact in (Compile, assembly) ~= { art =>
       art.withClassifier(Some("assembly"))
     },
@@ -113,11 +114,12 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
       "org.typelevel" %%% "cats-core" % "2.2.0"
     )
   )
-  .jsSettings(libraryDependencies ++= List(
-    "com.lihaoyi" %%% "scalatags" % "0.9.2",
-    "com.lihaoyi" %%% "scalarx" % "0.4.3",
-    "org.scalatest" %%% "scalatest" % "3.2.2" % "test",
-  ))
+  .jsSettings(
+    libraryDependencies ++= List(
+      "com.lihaoyi" %%% "scalatags" % "0.9.2",
+      "com.lihaoyi" %%% "scalarx" % "0.4.3",
+      "org.scalatest" %%% "scalatest" % "3.2.2" % "test"
+    ))
 
 lazy val gaProjectJVM = gaProject.jvm
 lazy val gaProjectJS = gaProject.js
@@ -147,12 +149,14 @@ siteSubdirName in SiteScaladoc := "api/latest"
 
 git.remoteRepo := s"git@github.com:$username/countdown.git"
 ghpagesNoJekyll := true
-releasePublishArtifactsAction := PgpKeys.publishSigned.value
-publishConfiguration := publishConfiguration.value.withOverwrite(true)
-publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
+ThisBuild / releasePublishArtifactsAction := PgpKeys.publishSigned.value
+ThisBuild / publishConfiguration := publishConfiguration.value.withOverwrite(
+  true)
+ThisBuild / publishLocalConfiguration := publishLocalConfiguration.value
+  .withOverwrite(true)
 
 test in assembly := {}
-publishTo := {
+ThisBuild / publishTo := {
   val nexus = "https://oss.sonatype.org/"
   if (version.value.endsWith("SNAPSHOT"))
     Some("snapshots" at nexus + "content/repositories/snapshots")
@@ -160,7 +164,8 @@ publishTo := {
     Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
-//credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
+ThisBuild / credentials += Credentials(
+  sbt.Path.userHome / ".sbt" / ".credentials")
 
 lazy val makePage =
   taskKey[Unit]("Puts the javascript and html resources together")
