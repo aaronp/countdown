@@ -94,7 +94,24 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
       art.withClassifier(Some("assembly"))
     },
     mainClass in (Compile, run) := Some("countdown.rest.Main"),
-    mainClass in (assembly) := Some("countdown.rest.Main")
+    mainClass in (assembly) := Some("countdown.rest.Main"),
+    pomExtra := {
+      <url>https://github.com/aaronp/gaProject</url>
+        <licenses>
+          <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+          </license>
+        </licenses>
+        <developers>
+          <developer>
+            <id>aaronp</id>
+            <name>aaronp</name>
+            <url>http://github.com/aaronp</url>
+          </developer>
+        </developers>
+    }
   )
   .jvmSettings(libraryDependencies ++= List(
     "com.typesafe" % "config" % "1.3.4",
