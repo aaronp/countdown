@@ -7,11 +7,14 @@ import com.typesafe.config.{Config, ConfigFactory}
 object Main extends IOApp {
 
   def configSummary(config: Config) = {
-    config.without(
-      ConfigFactory.systemEnvironment().withFallback(ConfigFactory.systemProperties())
-    ).summary()
+    config
+      .without(
+        ConfigFactory
+          .systemEnvironment()
+          .withFallback(ConfigFactory.systemProperties())
+      )
+      .summary()
   }
-
 
   def run(args: List[String]): IO[ExitCode] = {
     val config = args.toArray.asConfig().resolve()
@@ -19,7 +22,11 @@ object Main extends IOApp {
       case None =>
         for {
           _ <- IO(println(s"Running with\n${configSummary(config)}\n"))
-          exitCode <- CountdownServer.stream[IO](config).compile.drain.as(ExitCode.Success)
+          exitCode <- CountdownServer
+            .stream[IO](config)
+            .compile
+            .drain
+            .as(ExitCode.Success)
         } yield exitCode
       case Some(showMe) => {
         IO {

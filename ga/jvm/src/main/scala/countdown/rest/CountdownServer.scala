@@ -11,7 +11,9 @@ import scala.concurrent.ExecutionContext.global
 
 object CountdownServer {
 
-  def stream[F[_] : ConcurrentEffect](config: Config)(implicit T: Timer[F], C: ContextShift[F]): Stream[F, Nothing] = {
+  def stream[F[_]: ConcurrentEffect](config: Config)(
+      implicit T: Timer[F],
+      C: ContextShift[F]): Stream[F, Nothing] = {
     val host = config.getString("rest.host")
     val port = config.getInt("rest.port")
     val service = Service.forConfig[F](config)
@@ -19,7 +21,11 @@ object CountdownServer {
     stream(host, port, service)
   }
 
-  def stream[F[_] : ConcurrentEffect](host: String, port: Int, service: Service[F])(implicit T: Timer[F], C: ContextShift[F]): Stream[F, Nothing] = {
+  def stream[F[_]: ConcurrentEffect](host: String,
+                                     port: Int,
+                                     service: Service[F])(
+      implicit T: Timer[F],
+      C: ContextShift[F]): Stream[F, Nothing] = {
     val httpApp = CountdownRoutes[F](service).orNotFound
     val finalHttpApp = Logger.httpApp(true, true)(httpApp)
 

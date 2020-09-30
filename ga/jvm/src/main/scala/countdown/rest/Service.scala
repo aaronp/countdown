@@ -20,9 +20,9 @@ trait Service[F[_]] {
 object Service {
 
   final case class CountdownResponse(
-                                      solution: Option[String],
-                                      workingsOut: List[String]
-                                    )
+      solution: Option[String],
+      workingsOut: List[String]
+  )
 
   object CountdownResponse {
     implicit val codec =
@@ -57,22 +57,23 @@ object Service {
     )
   }
 
-  def forConfig[F[_] : Applicative](config: Config): Service[F] = {
+  def forConfig[F[_]: Applicative](config: Config): Service[F] = {
     apply(AsCountdownConfig(config))
   }
 
-  def apply[F[_] : Applicative](templateConfig: CountdownConfig): Service[F] =
+  def apply[F[_]: Applicative](templateConfig: CountdownConfig): Service[F] =
     new Service[F] {
       override def countdown(
-                              request: CountdownRequest): F[CountdownResponse] = {
-
+          request: CountdownRequest): F[CountdownResponse] = {
 
         val workingsOut = ListBuffer[String]()
-        val newConf = updateConfig(templateConfig, request) { input: Generation[Equation] =>
-          if (request.includeWorkingsOut) {
-            val (generation, geneology) = input
-            workingsOut ++= (s"Generation $generation") +: geneology.map(_.toString)
-          }
+        val newConf = updateConfig(templateConfig, request) {
+          input: Generation[Equation] =>
+            if (request.includeWorkingsOut) {
+              val (generation, geneology) = input
+              workingsOut ++= (s"Generation $generation") +: geneology.map(
+                _.toString)
+            }
         }
 
         newConf.solve() match {
@@ -82,13 +83,13 @@ object Service {
               Equation.showForTarget(newConf.targetValue)
 
             val str = show.show(result.value)
-            CountdownResponse(Option(str), workingsOut.toList
-            ).pure[F]
+            CountdownResponse(Option(str), workingsOut.toList).pure[F]
         }
       }
     }
 
-  def updateConfig(oldConf: CountdownConfig, request: CountdownRequest)(debug: Generation[Equation] => Unit) = {
+  def updateConfig(oldConf: CountdownConfig, request: CountdownRequest)(
+      debug: Generation[Equation] => Unit) = {
     val newRand =
       request.seed.map(Seed.apply).getOrElse(oldConf.rand)
 
@@ -102,8 +103,10 @@ object Service {
       rand = newRand,
       inputValues = request.inputNumbers,
       targetValue = request.targetNumber,
-      minEquationSize = request.minEquationSize.getOrElse(oldConf.minEquationSize),
-      maxEquationSize = request.maxEquationSize.getOrElse(oldConf.maxEquationSize),
+      minEquationSize =
+        request.minEquationSize.getOrElse(oldConf.minEquationSize),
+      maxEquationSize =
+        request.maxEquationSize.getOrElse(oldConf.maxEquationSize),
       debug = debug
     )
   }

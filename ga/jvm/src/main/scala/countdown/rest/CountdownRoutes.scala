@@ -6,7 +6,10 @@ import cats.implicits._
 import countdown.rest.Service.{CountdownRequest, CountdownResponse}
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.dsl.io.{OptionalQueryParamDecoderMatcher, QueryParamDecoderMatcher}
+import org.http4s.dsl.io.{
+  OptionalQueryParamDecoderMatcher,
+  QueryParamDecoderMatcher
+}
 import org.http4s.{EntityDecoder, EntityEncoder, HttpRoutes, Response}
 import io.circe.syntax._
 
@@ -30,16 +33,6 @@ object CountdownRoutes {
     import dsl._
     for {
       response <- svc.countdown(request)
-      _ = println(
-        s"""
-           |
-           |
-           |
-           |$request yields $response
-           |
-           |
-           |
-           |""".stripMargin)
       resp <- Ok(response)
     } yield resp
   }
@@ -48,7 +41,8 @@ object CountdownRoutes {
     val dsl = Http4sDsl[F]
     import dsl._
     HttpRoutes.of[F] {
-      case GET -> Root / IntVar(target) :? NumbersParam(numbers) +& DebugParam(debug) +& SeedParam(seedOpt) =>
+      case GET -> Root / IntVar(target) :? NumbersParam(numbers) +& DebugParam(
+      debug) +& SeedParam(seedOpt) =>
         val request =
           CountdownRequest(target,
             numbers.split(",", -1).map(_.trim.toInt).toSet,
