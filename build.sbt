@@ -2,7 +2,7 @@ import java.nio.file.Path
 
 import org.scoverage.coveralls.Imports.CoverallsKeys._
 import sbt.KeyRanks
-import sbt.Keys.{artifact, libraryDependencies, publishMavenStyle}
+import sbt.Keys.{artifact, libraryDependencies, mainClass, publishMavenStyle}
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 import sbtrelease.ReleasePlugin.autoImport.releaseCrossBuild
 
@@ -93,7 +93,9 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
     addArtifact(Artifact(projectName, "assembly"), sbtassembly.AssemblyKeys.assembly),
     artifact in (Compile, assembly) ~= { art =>
       art.withClassifier(Some("assembly"))
-    }
+    },
+    mainClass in (Compile, run) := Some("countdown.rest.Main"),
+    mainClass in (assembly) := Some("countdown.rest.Main")
   )
   .jvmSettings(libraryDependencies ++= List(
     "com.typesafe" % "config" % "1.3.4",
