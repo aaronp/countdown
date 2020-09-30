@@ -94,24 +94,7 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
       art.withClassifier(Some("assembly"))
     },
     mainClass in (Compile, run) := Some("countdown.rest.Main"),
-    mainClass in (assembly) := Some("countdown.rest.Main"),
-    pomExtra := {
-      <url>https://github.com/aaronp/gaProject</url>
-        <licenses>
-          <license>
-            <name>Apache 2</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-            <distribution>repo</distribution>
-          </license>
-        </licenses>
-        <developers>
-          <developer>
-            <id>aaronp</id>
-            <name>aaronp</name>
-            <url>http://github.com/aaronp</url>
-          </developer>
-        </developers>
-    }
+    mainClass in (assembly) := Some("countdown.rest.Main")
   )
   .jvmSettings(libraryDependencies ++= List(
     "com.typesafe" % "config" % "1.3.4",
@@ -164,23 +147,9 @@ siteSubdirName in SiteScaladoc := "api/latest"
 
 git.remoteRepo := s"git@github.com:$username/countdown.git"
 ghpagesNoJekyll := true
-ThisBuild / releasePublishArtifactsAction := PgpKeys.publishSigned.value
-ThisBuild / publishConfiguration := publishConfiguration.value.withOverwrite(
-  true)
-ThisBuild / publishLocalConfiguration := publishLocalConfiguration.value
-  .withOverwrite(true)
+
 
 test in assembly := {}
-ThisBuild / publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (version.value.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
-
-ThisBuild / credentials += Credentials(
-  sbt.Path.userHome / ".sbt" / ".credentials")
 
 lazy val makePage =
   taskKey[Unit]("Puts the javascript and html resources together")
@@ -234,21 +203,3 @@ scalafmtVersion in ThisBuild := "1.4.0"
 // see http://www.scalatest.org/user_guide/using_scalatest_with_sbt
 testOptions in Test += (Tests
   .Argument(TestFrameworks.ScalaTest, "-h", s"target/scalatest-reports", "-oN"))
-
-ThisBuild / pomExtra := {
-  <url>https://github.com/{username}/{projectName}</url>
-    <licenses>
-      <license>
-        <name>Apache 2</name>
-        <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        <distribution>repo</distribution>
-      </license>
-    </licenses>
-    <developers>
-      <developer>
-        <id>{username}</id>
-        <name>{username}</name>
-        <url>http://github.com/{username}</url>
-      </developer>
-    </developers>
-}

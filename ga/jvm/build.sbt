@@ -1,3 +1,18 @@
+releasePublishArtifactsAction := PgpKeys.publishSigned.value
+publishConfiguration := publishConfiguration.value.withOverwrite(
+  true)
+publishLocalConfiguration := publishLocalConfiguration.value
+  .withOverwrite(true)
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (version.value.endsWith("SNAPSHOT"))
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
+
+credentials += Credentials(sbt.Path.userHome / ".sbt" / ".credentials")
+
 pomExtra := {
   <url>https://github.com/aaronp/gaProject</url>
     <licenses>
