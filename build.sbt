@@ -32,8 +32,6 @@ paradoxProperties += ("project.url" -> s"https://$username.github.io/$projectNam
 val testDependencies = List(
   "junit" % "junit" % "4.12" % "test",
   "org.scalatest" %% "scalatest" % "3.2.2" % "test",
-//  "org.scalatest" %% "scalatest-wordspec" % "3.2.2" % "test",
-//  "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.2" % "test",
   "org.scala-lang.modules" %% "scala-xml" % "1.3.0" % "test",
   "org.pegdown" % "pegdown" % "1.6.0" % "test"
 )
@@ -206,8 +204,8 @@ makePage := {
   IO.copy(onDemand, CopyOptions().withOverwrite(false))
 }
 
-buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
-buildInfoPackage := "countdown.build"
+ThisBuild / buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
+ThisBuild / buildInfoPackage := "countdown.build"
 
 // see http://scalameta.org/scalafmt/
 scalafmtOnCompile in ThisBuild := true
@@ -217,9 +215,8 @@ scalafmtVersion in ThisBuild := "1.4.0"
 testOptions in Test += (Tests
   .Argument(TestFrameworks.ScalaTest, "-h", s"target/scalatest-reports", "-oN"))
 
-pomExtra := {
-  <url>https://github.com/{username}/{projectName}
-  </url>
+ThisBuild / pomExtra := {
+  <url>https://github.com/{username}/{projectName}</url>
     <licenses>
       <license>
         <name>Apache 2</name>
