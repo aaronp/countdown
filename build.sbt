@@ -1,7 +1,8 @@
 import java.nio.file.Path
+
 import org.scoverage.coveralls.Imports.CoverallsKeys._
 import sbt.KeyRanks
-import sbt.Keys.{libraryDependencies, publishMavenStyle}
+import sbt.Keys.{artifact, libraryDependencies, publishMavenStyle}
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 import sbtrelease.ReleasePlugin.autoImport.releaseCrossBuild
 
@@ -88,7 +89,11 @@ val gaProject = crossProject(JSPlatform, JVMPlatform)
     publishMavenStyle := true,
     releaseCrossBuild := true,
     coverageMinimum := 90,
-    coverageFailOnMinimum := true
+    coverageFailOnMinimum := true,
+    addArtifact(Artifact(projectName, "assembly"), sbtassembly.AssemblyKeys.assembly),
+    artifact in (Compile, assembly) ~= { art =>
+      art.withClassifier(Some("assembly"))
+    }
   )
   .jvmSettings(libraryDependencies ++= List(
     "com.typesafe" % "config" % "1.3.4",
@@ -206,10 +211,7 @@ testOptions in Test += (Tests
   .Argument(TestFrameworks.ScalaTest, "-h", s"target/scalatest-reports", "-oN"))
 
 pomExtra := {
-  <url>https://github.com/
-    {username}
-    /
-    {projectName}
+  <url>https://github.com/{username}/{projectName}
   </url>
     <licenses>
       <license>
@@ -220,15 +222,9 @@ pomExtra := {
     </licenses>
     <developers>
       <developer>
-        <id>
-          {username}
-        </id>
-        <name>
-          {username}
-        </name>
-        <url>http://github.com/
-          {username}
-        </url>
+        <id>{username}</id>
+        <name>{username}</name>
+        <url>http://github.com/{username}</url>
       </developer>
     </developers>
 }
