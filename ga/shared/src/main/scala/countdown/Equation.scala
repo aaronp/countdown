@@ -142,7 +142,15 @@ object Equation {
   }
 
   def parse(value: String): Equation = {
-    val expression = value.split(" ").map {
+    val padded = value.flatMap {
+      case n if n.isDigit => s"$n"
+      case n => s" $n "
+    }
+    parseSafe(padded)
+  }
+
+  private def parseSafe(value: String): Equation = {
+    val expression = value.split(" +").map {
       case "+" => Add
       case "-" => Subtract
       case "*" => Multiply

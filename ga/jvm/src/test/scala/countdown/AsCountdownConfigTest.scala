@@ -18,11 +18,12 @@ class AsCountdownConfigTest extends BaseSpec {
 
       assertions(soln)
 
-      gen shouldBe 2
-      id shouldBe 194
-      result shouldBe Equation.parse("12 - 3 + 6")
-      mom.value shouldBe Equation.parse("12 - 6 / 12 - 14 / 7 - 3")
-      dad.value shouldBe Equation.parse("7 / 3 + 6")
+      gen shouldBe 3
+      id shouldBe 29
+
+      result shouldBe Equation.parse("19 - 12 / 3")
+      mom.value shouldBe Equation.parse("19-12/3-12")
+      dad.value shouldBe Equation.parse("3*19+7")
     }
 
     "solve random equations" in {
@@ -39,11 +40,11 @@ class AsCountdownConfigTest extends BaseSpec {
 
         assertions(soln)
 
-        gen shouldBe 0
-        id shouldBe 168
+        gen shouldBe 3
+        id shouldBe 51
         result shouldBe Equation.parse("8 - 6 + 5")
-        mom.value shouldBe Equation.parse("8 - 5 - 6 - 3")
-        dad.value shouldBe Equation.parse("8 * 6 + 5")
+        mom.value shouldBe Equation.parse("8 - 6 + 5 - 3")
+        dad.value shouldBe Equation.parse("8 * 5 - 8")
 
       }
 
@@ -55,11 +56,12 @@ class AsCountdownConfigTest extends BaseSpec {
 
         assertions(soln)
 
-        gen shouldBe 0
-        id shouldBe 190
-        result shouldBe Equation.parse("8 - 6 + 5")
-        mom.value shouldBe Equation.parse("8 - 6 / 5 / 3")
-        dad.value shouldBe Equation.parse("8 * 6 + 5")
+        gen shouldBe 4
+        id shouldBe 34
+
+        result shouldBe Equation.parse("5 * 3 - 8")
+        mom.value shouldBe Equation.parse("5 * 3 + 6 / 3")
+        dad.value shouldBe Equation.parse("8 * 3 - 8")
       }
     }
   }
@@ -72,14 +74,14 @@ class AsCountdownConfigTest extends BaseSpec {
     */
   private def assertions(soln: Offspring[Equation]) = {
     val Offspring(result, gen, id, mom, dad) = soln
-//    println(
+    //    println(
     (s"""
-         |gen shouldBe $gen
-         |id shouldBe $id
-         |result shouldBe Equation.parse("${result.expressionString}")
-         |mom.value shouldBe Equation.parse("${mom.value.expressionString}")
-         |dad.value shouldBe Equation.parse("${dad.value.expressionString}")
-         |""".stripMargin)
+        |gen shouldBe $gen
+        |id shouldBe $id
+        |result shouldBe Equation.parse("${result.expressionString}")
+        |mom.value shouldBe Equation.parse("${mom.value.expressionString}")
+        |dad.value shouldBe Equation.parse("${dad.value.expressionString}")
+        |""".stripMargin)
   }
 
 }
