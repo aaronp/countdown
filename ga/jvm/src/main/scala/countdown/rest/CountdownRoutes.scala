@@ -4,6 +4,8 @@ import cats.Applicative
 import cats.effect.Sync
 import cats.implicits._
 import countdown.rest.Service.{CountdownRequest, CountdownResponse}
+import io.circe.Json
+import io.circe.syntax._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.io.{
@@ -11,12 +13,11 @@ import org.http4s.dsl.io.{
   QueryParamDecoderMatcher
 }
 import org.http4s.{EntityDecoder, EntityEncoder, HttpRoutes, Response}
-import io.circe.syntax._
 
 object CountdownRoutes {
 
-  implicit def requestEntityDecoder[F[_]: Sync]
-    : EntityDecoder[F, CountdownRequest] = jsonOf
+//  implicit def requestEntityDecoder[F[_]: Sync]
+//    : EntityDecoder[F, CountdownRequest] = jsonDecoder
 
   implicit def responseEntityEncoder[F[_]: Applicative]
     : EntityEncoder[F, CountdownResponse] = jsonEncoderOf
@@ -43,14 +44,15 @@ object CountdownRoutes {
     HttpRoutes.of[F] {
       case GET -> Root / IntVar(target) :? NumbersParam(numbers) +& DebugParam(
             debug) +& SeedParam(seedOpt) =>
-        val request =
-          CountdownRequest(target,
-                           numbers.split(",", -1).map(_.trim.toInt).toSet,
-                           seedOpt,
-                           includeWorkingsOut = debug.getOrElse(false))
+        val request: CountdownRequest = Map(
+          "target" -> target.asJson,
+          "from" -> numbers.split(",", -1).map(_.toInt).asJson,
+          "debug" -> debug.getOrElse(false).asJson,
+        ).asJson
         handle(svc, request)
       case req @ POST -> Root =>
-        req.as[CountdownRequest].flatMap(handle(svc, _))
+        val body: F[CountdownRequest] = req.as[CountdownRequest]
+        body.flatMap(handle(svc, _))
       case GET -> Root =>
         Ok(s"""Usage:
              |GET /<target number>?numbers=<comma-separated numbers>&seed=1234

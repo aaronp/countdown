@@ -20,9 +20,9 @@ trait Service[F[_]] {
 object Service {
 
   final case class CountdownResponse(
-                                      solution: Option[String],
-                                      workingsOut: List[String]
-                                    )
+      solution: Option[String],
+      workingsOut: List[String]
+  )
 
   object CountdownResponse {
     implicit val codec =
@@ -50,9 +50,10 @@ object Service {
         |}""".stripMargin
   }
 
-  def forConfig[F[_] : Applicative](config: Config): Service[F] = {
+  def forConfig[F[_]: Applicative](config: Config): Service[F] = {
     new Service[F] {
-      override def countdown(request: CountdownRequest): F[CountdownResponse] = {
+      override def countdown(
+          request: CountdownRequest): F[CountdownResponse] = {
         val workingsOut = ListBuffer[String]()
         val newConf = prepareConfig(config, request, workingsOut)
         newConf.solve() match {
@@ -66,18 +67,19 @@ object Service {
     }
   }
 
-  def prepareConfig(config: Config, request: CountdownRequest, workingsOut: ListBuffer[String]): CountdownConfig = {
-    val userConfig = ConfigFactory.parseString(request.noSpaces).withFallback(config)
+  def prepareConfig(config: Config,
+                    request: CountdownRequest,
+                    workingsOut: ListBuffer[String]): CountdownConfig = {
+    val userConfig =
+      ConfigFactory.parseString(request.noSpaces).withFallback(config)
     val countdownConfig: CountdownConfig = AsCountdownConfig(userConfig)
     if (userConfig.getBoolean("debug")) {
       countdownConfig
     } else {
-      countdownConfig.copy(debug =
-        (input: Generation[Equation]) => {
-          val (generation, geneology) = input
-          workingsOut ++= (s"Generation $generation") +: geneology.map(_.toString)
-        }
-      )
+      countdownConfig.copy(debug = (input: Generation[Equation]) => {
+        val (generation, geneology) = input
+        workingsOut ++= (s"Generation $generation") +: geneology.map(_.toString)
+      })
     }
   }
 }
