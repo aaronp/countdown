@@ -18,27 +18,15 @@ final case class AlgoSettings[A: Ordering : Show](
                                                    success: A => Boolean,
                                                    mutate: (Seed, A, Generation, Offset) => (Seed, Option[A]),
                                                    combine: (Seed, A, A) => (Seed, A)) {
-
   def ordering: Ordering[A] = Ordering[A]
 
-  def withSizes(
-                 newMaxPopulationSize: Option[Int] = None,
-                 newMaxGenerations: Option[Int] = None,
-               ) = {
-    copy(
-      maxPopulationSize = newMaxPopulationSize.getOrElse(maxPopulationSize),
-      maxGenerations = newMaxGenerations.getOrElse(maxGenerations)
-    )
-  }
   def show: Show[A] = Show[A]
 
   object implicits {
-
     implicit def orderingInstance: Ordering[A] = ordering
 
     implicit def showInstance: Show[A] = show
   }
-
 }
 
 object AlgoSettings {
