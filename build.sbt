@@ -148,7 +148,6 @@ siteSubdirName in SiteScaladoc := "api/latest"
 git.remoteRepo := s"git@github.com:$username/countdown.git"
 ghpagesNoJekyll := true
 
-
 test in assembly := {}
 
 lazy val makePage =

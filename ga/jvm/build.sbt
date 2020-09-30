@@ -1,6 +1,5 @@
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
-publishConfiguration := publishConfiguration.value.withOverwrite(
-  true)
+publishConfiguration := publishConfiguration.value.withOverwrite(true)
 publishLocalConfiguration := publishLocalConfiguration.value
   .withOverwrite(true)
 publishTo := {
