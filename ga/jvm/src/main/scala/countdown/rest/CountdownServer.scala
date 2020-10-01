@@ -17,17 +17,21 @@ object CountdownServer {
     val host = config.getString("rest.host")
     val port = config.getInt("rest.port")
     val service = Service.forConfig[F](config)
-
-    stream(host, port, service)
+    stream(host, port,
+      logHeaders =  config.getBoolean("rest.logHeaders"),
+      logBody =  config.getBoolean("rest.logBody"),
+      service)
   }
 
   def stream[F[_]: ConcurrentEffect](host: String,
                                      port: Int,
+                                     logHeaders : Boolean,
+                                     logBody : Boolean,
                                      service: Service[F])(
       implicit T: Timer[F],
       C: ContextShift[F]): Stream[F, Nothing] = {
     val httpApp = CountdownRoutes[F](service).orNotFound
-    val finalHttpApp = Logger.httpApp(true, true)(httpApp)
+    val finalHttpApp = if (logHeaders || logBody) Logger.httpApp(logHeaders, logBody)(httpApp) else httpApp
 
     for {
       exitCode <- BlazeServerBuilder[F](global)

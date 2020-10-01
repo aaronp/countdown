@@ -73,7 +73,7 @@ object Service {
     val userConfig =
       ConfigFactory.parseString(request.noSpaces).withFallback(config)
     val countdownConfig: CountdownConfig = AsCountdownConfig(userConfig)
-    if (userConfig.getBoolean("debug")) {
+    if (!userConfig.getBoolean("debug")) {
       countdownConfig
     } else {
       countdownConfig.copy(debug = (input: Generation[Equation]) => {
