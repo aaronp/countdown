@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+
+    <script src="jquery.min.js"></script>
+    <script src="springy.js"></script>
+    <script src="springyui.js"></script>
+    <script src="countdown.js"></script>
+    <script src="gaproject-opt.js"></script>
+    <script src="swipe.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="form.css"/>
+    <link type="text/css" rel="stylesheet" href="ga.css"/>
+</head>
+<body onload="init('slider')">
+<div class="navigation">
+    <button onclick="jumpToBeginning()">About</button>
+    <button onclick="jumpToConfig()">Countdown</button>
+    <button onclick="jumpToComputeFrame()">Workings Out</button>
+    <button onclick="jumpToSolutionFrame()">Solution</button>
+</div>
+
+<div id="slider" class="swipe">
+    <div class="swipe-wrap">
+        <div id="about" class="about">
+            <h2>Countdown</h2>
+            <p>
+                This is yet another implementation to solve the popular British <a href="https://en.wikipedia.org/wiki/Countdown_(game_show)#Numbers_round">Countdown numbers game</a> using a
+                <a href="https://en.wikipedia.org/wiki/Genetic_algorithm">genetic algorithm</a>.
+            </p>
+            <p>
+                Essentially it's a game where you try to arrive at a target number using some combination of other random input numbers.
+            </p>
+            <p>For example:</p><p> "Try to get the number 378 by adding, subtracting, multiplying
+                or dividing some combination of 25, 3, 8, 12, 9 and 15"
+            </p>
+            <h2>Why this is interesting</h2>
+            <p>
+                Instead of trying to "brute force" an answer by working through every possible permutation of the
+                input numbers, we use a solution which models nature: Genetic Algorithms.
+            </p>
+            <p>
+                Simply put, we start with some random population, let the individuals in that population breed (e.g. combine with each other and pass down some of their genes to their descendants), then observe that only the fittest survive.
+            </p>
+            <p>
+                In this case, instead of actual species literally breeding and passing down their genes, we're breeding equations and culling those which aren't getting closer to our target number.
+                So our program looks like this:
+            </p>
+            <ol>
+                <li>Start with a completely random population of possible equations.</li>
+                <li>Evaluate each equation. If one is valid (e.g. doesn't contain duplicate numbers) and evaluates to
+                    our target number, then that's our solution
+                </li>
+                <li>If we don't have a solution, then we "breed" parts of the population. We do this by taking a prefix
+                    of one parent and the suffix from another:
+                    <div>
+                        <p>The equation&nbsp;&nbsp;: 5 * 6 + 13 - 12 = 31</p>
+                        <p>Combined with&nbsp;: 9 / 3 - 4 + 6 = 5</p>
+                        <p>If we take the first (arbitrarily) at "5 * 6" and combine it with "- 4 + 6" from the second,
+                            we get:</p>
+                        <p>Offspring: 5 * 6 - 4 + 6 = 32</p>
+                    </div>
+                </li>
+                <li>With this new generation, we keep the "fittest" equations (those which come closest to our target
+                    number) and cull those which are furthest away.
+                </li>
+            </ol>
+            <p>
+                We just have to introduce one final element: random mutation. Very seldomly we might change a "+" to a "-", alter the length of the equation, or swap one
+                input number for another.
+            </p>
+            <h3><a href="#" onclick="jumpToConfig()">Try it Out</a></h3>
+            <p>
+                The example here allows you to specify a target number and some input numbers, then run the genetic algorithm in your browser.
+            </p>
+            <p>In addition, you can provide an explicit 'seed' random value which controls the randomness throughout the algorithm, such as:
+            <ul>
+                <li>The initial equation population</li>
+                <li>The points at which genes are spliced from each parent</li>
+                <li>When and how mutations happen and how</li>
+            </ul>
+            </p>
+            <p>
+                You can also configure the maximum number of generations to try before giving up, the maximum population
+                size, the mutation probability (e.g. 0.01 is 1%), as well as the minimum equation size to use for the
+                initial population and maximum nodes to render in the final display.
+            </p>
+            <p>
+                Running <a href="#" onclick="jumpToConfig()">the program</a> will do some workings out, then produce either 'No Solution' or a graph like this:
+            </p>
+            <p>
+                <img src="example.png" width="1000px" height="800px"/>
+            </p>
+            <h3>About the Code</h3>
+            <p>
+                I've actually even written this before <a href="https://github.com/aaronp/ga">in Java</a>, but I wanted
+                an example which didn't have to start from a binary representation.
+            </p>
+            <p>
+                I also wanted to have better control over the randomness, expose a javascript version, and just
+                generally try and improve on my first pass.
+            <p>
+                A massive thanks and credit to some of the libraries/tech I've used.
+                Please feel free to fork and play with the code from <a href="https://github.com/aaronp/countdown">github.com/aaronp/countdown</a>
+            <ul>
+                <li><a href="http://getspringy.com/">springy</a> for the forced-layout</li>
+                <li><a href="https://www.sanwebe.com/2014/08/css-html-forms-designs">sanwebe</a> for the form css</li>
+                <li><a href="https://www.scala-js.org">scalajs</a> as always for letting me write this in <a
+                        href="https://www.scala-lang.org/">scala</a></li>
+                <li><a href="https://swipe.js.org">swipe.js.org</a> for the horizontal swipe-flow</li>
+                <li><a href="https://typelevel.org/cats/">cats</a> for the FP (e.g. <a
+                        href="https://typelevel.org/cats/datatypes/state.html">State</a> which allowed my control over
+                    random values)
+                </li>
+            </ul>
+            </p>
+
+        </div>
+        <!-- This is filled in by the 'CountdownPage' code. The id of this div is given as an argument in the 'init' onload function -->
+        <div id="config">
+        </div>
+        <!-- This is filled in by the 'CountdownPage' code as well to show the logs from each generation -->
+        <div id="compute" class="compute" style="overflow-y:visible;">
+        </div>
+        <!-- This too gets populated - the 'scriptContainer' has some javascript injected -->
+        <div id="results">
+            <div id="scriptContainer">
+            </div>
+            <div>
+                <canvas id="layout" width="480" height="460"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

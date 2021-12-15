@@ -1,0 +1,59 @@
+.swipe {
+  overflow: hidden;
+  visibility: hidden;
+  position: relative;
+}
+.swipe-wrap {
+  overflow: hidden;
+  position: relative;
+}
+.swipe-wrap > div {
+  float: left;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.dot {
+  height: 70px;
+  width: 120px;
+  padding-top:50px;
+  border-radius: 50%;
+  border-color: blue;
+  border-width: 4;
+  border-style: solid;
+  display: inline-block;
+}
+
+.compute {
+  overflow-y:visible;
+  height:80%;
+}
+.compute > p {
+  font-size: 8pt;
+  font-color: blue;
+}
+.logs {
+  display: block;
+  margin-left: 40px;
+  margin-right: 40px;
+  overflow-y:auto;
+  border-width: 0px;
+}
+
+.navigation {
+  height:40px
+  background-color:#F3F3F3;
+}
+
+li {
+ margin-top:10px;
+ margin-bottom:10px;
+}
+
+.about > * {
+  display: block;
+  margin-left: 40px;
+  margin-right: 40px;
+  overflow: auto;
+}
